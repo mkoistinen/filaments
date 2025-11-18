@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White FDM Filament Color Comparison</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #24292e;
+            --border-color: #d0d7de;
+            --table-header-bg: #f6f8fa;
+            --table-header-hover: #e8ecef;
+            --button-bg: #fff;
+            --button-hover: #f0f0f0;
+            --button-active-bg: #0969da;
+            --button-active-color: #fff;
+            --heading-border: #eaecef;
+            --swatch-border: #999;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #0d1117;
+                --text-color: #c9d1d9;
+                --border-color: #30363d;
+                --table-header-bg: #161b22;
+                --table-header-hover: #1f2428;
+                --button-bg: #21262d;
+                --button-hover: #30363d;
+                --button-active-bg: #1f6feb;
+                --button-active-color: #fff;
+                --heading-border: #21262d;
+                --swatch-border: #6e7681;
+            }
+        }
+
+        body.light-mode {
+            --bg-color: #ffffff;
+            --text-color: #24292e;
+            --border-color: #d0d7de;
+            --table-header-bg: #f6f8fa;
+            --table-header-hover: #e8ecef;
+            --button-bg: #fff;
+            --button-hover: #f0f0f0;
+            --button-active-bg: #0969da;
+            --button-active-color: #fff;
+            --heading-border: #eaecef;
+            --swatch-border: #999;
+        }
+
+        body.dark-mode {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --table-header-bg: #161b22;
+            --table-header-hover: #1f2428;
+            --button-bg: #21262d;
+            --button-hover: #30363d;
+            --button-active-bg: #1f6feb;
+            --button-active-color: #fff;
+            --heading-border: #21262d;
+            --swatch-border: #6e7681;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        h1 {
+            border-bottom: 1px solid var(--heading-border);
+            padding-bottom: 0.3em;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+        h2 {
+            border-bottom: 1px solid var(--heading-border);
+            padding-bottom: 0.3em;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+        p {
+            margin-bottom: 16px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+        th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+            padding: 6px 13px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            user-select: none;
+        }
+        th:hover {
+            background-color: var(--table-header-hover);
+        }
+        th.sorted-asc::after {
+            content: ' ↑';
+            opacity: 1;
+        }
+        th.sorted-desc::after {
+            content: ' ↓';
+            opacity: 1;
+        }
+        td {
+            padding: 6px 13px;
+            border: 1px solid var(--border-color);
+        }
+        td:nth-child(4) {
+            text-align: right;
+        }
+        .color-mode-switcher {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+        .color-mode-btn {
+            padding: 6px 12px;
+            background: var(--button-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+            color: var(--text-color);
+        }
+        .color-mode-btn:hover {
+            background: var(--button-hover);
+        }
+        .color-mode-btn.active {
+            background: var(--button-active-bg);
+            color: var(--button-active-color);
+            border-color: var(--button-active-bg);
+        }
+        .color-swatch {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--swatch-border);
+            border-radius: 3px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: var(--button-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            color: var(--text-color);
+        }
+        .theme-toggle:hover {
+            background: var(--button-hover);
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span> <span id="theme-text">Dark</span>
+    </button>
+
+    <h1>White FDM Filament Color Comparison</h1>
+
+    <p>
+        "White" is a very relative term, especially in the Thermoplastics
+        space. I'm on a quest for the best looking white for my application.
+        This webpage presents my own findings for all the white filaments I
+        come across.
+    </p>
+    <p>
+        I previously posted my results on a <a href="https://www.reddit.com/r/3Dprinting/comments/10tv174/quality_white_pla_filament/">Reddit post</a> in the 3Dprinting
+        sub-reddit. However, at some point, I was unable to update the post with
+        new filaments due to age or perhaps post-length, so, this page was born.
+    </p>
+    <p>
+        All the filaments shown in the table below were printed into samples on
+        my Prusa MK4S or CORE One using the same generic PLA filament profile.
+        Colors are measured using my specific Pico Colorimeter in the same
+        environment with the same ambient lighting and roughly the same
+        temperature. The measurements are the average of 3 samples take from
+        surfaces printed along the different Cartesian axes (XY, XZ, YZ). The
+        color is stored as Lab format on this webpage and all other color
+        formats are derived from that value.
+    </p>
+    <p>
+        The recorded values are different than previously presented on the
+        Reddit post. The primary reason for this the my new practice of
+        averaging 3 measurements for each of the Cartesian planes of printing.
+        This was most notable for the Silk-effect filaments, which are likely
+        engineered to reflect different color light in different directions.
+        Interestingly, all of the filaments had some degree of visible variance
+        when measured this way.
+    </p>
+
+    <h3>Please Note:</h3>
+    <p>
+        The color swatches shown in the Color column are only <strong>rough
+        approximations</strong> of the sampled colors and should be taken with
+        a grain of salt. They are probably most visually accurate when the page
+        is viewed in dark mode, but displaying a color in an HTML color swatch
+        or photograph on an arbitrary display cannot truly represent how these
+        3D printed samples appear when observed in person under ideal lighting
+        conditions. Regardless, I can attest that the <em>relative</em>
+        differences between colors are represented by these HTML color
+        swatches.
+    </p>
+
+    <h2>The Table</h2>
+    <p>
+        The are initially organized by "lightness" (L value in Lab) from
+        highest to lowest but you can click a column header to sort differently.
+    </p>
+
+    <div class="color-mode-switcher">
+        <strong>Color Format:</strong>
+        <button class="color-mode-btn active" data-mode="lab">LAB</button>
+        <button class="color-mode-btn" data-mode="rgb">RGB</button>
+        <button class="color-mode-btn" data-mode="hsv">HSV</button>
+        <button class="color-mode-btn" data-mode="hex">Hex</button>
+        <strong style="padding-left: 2em;">Sort by:</strong>
+        <button class="color-mode-btn" data-sort="lightness">Lightness ↓</button>
+        <button class="color-mode-btn" data-sort="warmth">Tint Warmth ↑</button>
+        <button class="color-mode-btn" data-sort="strength">Tint Strength ↑</button>
+    </div>
+
+    <table id="filamentTable">
+        <thead>
+            <tr>
+                <th data-sort="brand">Brand</th>
+                <th data-sort="polymer">Color/Polymer</th>
+                <th data-sort="color">Color</th>
+                <th data-sort="cost">USD/Kg</th>
+            </tr>
+        </thead>
+        <tbody>
+           <tr data-lab="94.2, -2.2, -0.1">
+                <td>Sunlu</td>
+                <td>While PLA</td>
+                <td class="color-cell"></td>
+                <td>16.99</td>
+            </tr>
+            <tr data-lab="92.6, -1.8, -0.6">
+                <td>Push Plastic</td>
+                <td>White PLA</td>
+                <td class="color-cell"></td>
+                <td>19.99</td>
+            </tr>
+            <tr data-lab="92.4, -2.1, -2.2">
+                <td>eSun</td>
+                <td>Basic PLA - White</td>
+                <td class="color-cell"></td>
+                <td>11.99</td>
+            </tr>
+            <tr data-lab="92.2, -2.3, -0.4">
+                <td>Hatchbox</td>
+                <td>White PLA</td>
+                <td class="color-cell"></td>
+                <td>28.00</td>
+            </tr>
+            <tr data-lab="91.1, -2.0, -0.4">
+                <td>ProtoPasta</td>
+                <td>Opaque White HTPLA</td>
+                <td class="color-cell"></td>
+                <td>99.99</td>
+            </tr>
+            <tr data-lab="90.5, -2.3, -1.2">
+                <td>Overture</td>
+                <td>White Pro PLA</td>
+                <td class="color-cell"></td>
+                <td>15.65</td>
+            </tr>
+            <tr data-lab="90.4, -1.0, 0.1">
+                <td>Overture</td>
+                <td>White Matte PLA</td>
+                <td class="color-cell"></td>
+                <td>15.12</td>
+            </tr>
+            <tr data-lab="89.7, -1.9, -3.6">
+                <td>eSun</td>
+                <td>Cool White PLA</td>
+                <td class="color-cell"></td>
+                <td>22.99</td>
+            </tr>
+            <tr data-lab="89.3, 2.8, -7.8">
+                <td>Bblife</td>
+                <td>Silk White PLA</td>
+                <td class="color-cell"></td>
+                <td>21.59</td>
+            </tr>
+            <tr data-lab="87.3, 3.2, -6.5">
+                <td>Mika 3D</td>
+                <td>Silk White PLA</td>
+                <td class="color-cell"></td>
+                <td>17.09</td>
+            </tr>
+            <tr data-lab="85.3, -1.4, -1.9">
+                <td>Mika 3D</td>
+                <td>White PLA</td>
+                <td class="color-cell"></td>
+                <td>17.26</td>
+            </tr>
+            <tr data-lab="83.4, -1.2, -1.7">
+                <td>Prusament</td>
+                <td>Pristine White PLA</td>
+                <td class="color-cell"></td>
+                <td>26.99</td>
+            </tr>
+            <tr data-lab="83.2, 0.2, -5.1">
+                <td>3D Solutech</td>
+                <td>Real White Premium PLA</td>
+                <td class="color-cell"></td>
+                <td>19.99</td>
+            </tr>
+            <tr data-lab="">
+                <td>Elegoo</td>
+                <td>White PLA Plus</td>
+                <td class="color-cell"></td>
+                <td>14.99</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Notes</h2>
+
+    <p>
+        All of them, in isolation, would indeed be described as white, but when
+        placed next to one another, I can quickly see that white is a very
+        relative term. The printed samples clearly vary in brightness, but also
+        have tinting in one way or another.
+    </p>
+
+    <p>
+        It is clear to my eyes that the eSun Cool White PLA is most certainly
+        the "coolest" of the colors in that they have a distinct blueish tint
+        <em>relative to the other samples</em>. On the other side, the
+        "warmest" of these to my eyes is the 3D Solutech "Real White" Premium
+        PLA, which looks slightly magenta <em>relative to the other
+        samples</em>.
+    </p>
+
+    <p>
+        The glossiest of the samples were the Bblife Silk PLA and the Mika 3D
+        Silk PLA (naturally), but quickly followed by the ProtoPasta White PETG
+        and the 3D Solutech "Real White" PLA. The most matte-finish was (also
+        naturally), the Overture White Matte PLA sample.
+    </p>
+
+    <script>
+        // Theme management
+        function getSystemTheme() {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function getStoredTheme() {
+            return localStorage.getItem('theme');
+        }
+
+        function setTheme(theme) {
+            if (theme === 'auto') {
+                const systemTheme = getSystemTheme();
+                document.body.className = systemTheme === 'dark' ? 'dark-mode' : 'light-mode';
+                updateThemeButton('auto', systemTheme);
+            } else {
+                document.body.className = theme === 'dark' ? 'dark-mode' : 'light-mode';
+                updateThemeButton(theme, theme);
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        function updateThemeButton(storedTheme, actualTheme) {
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+
+            if (storedTheme === 'auto') {
+                icon.textContent = '🔄';
+                text.textContent = `Auto (${actualTheme === 'dark' ? 'Dark' : 'Light'})`;
+            } else if (actualTheme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'Switch to Light';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Switch to Dark';
+            }
+        }        function toggleTheme() {
+            const currentStored = getStoredTheme() || 'auto';
+
+            if (currentStored === 'auto') {
+                setTheme('light');
+            } else if (currentStored === 'light') {
+                setTheme('dark');
+            } else {
+                setTheme('auto');
+            }
+        }
+
+        // Initialize theme on page load
+        const storedTheme = getStoredTheme() || 'auto';
+        setTheme(storedTheme);
+
+        // Listen for system theme changes when in auto mode
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (getStoredTheme() === 'auto' || !getStoredTheme()) {
+                setTheme('auto');
+            }
+        });
+
+        let currentColorMode = 'lab';
+        let currentSort = { column: null, direction: 'asc' };
+
+        // Utility functions
+        function parseLAB(labString) {
+            const parts = labString.split(',').map(s => parseFloat(s.trim()));
+            return { L: parts[0], a: parts[1], b: parts[2] };
+        }
+
+        // LAB to XYZ conversion (D65 illuminant)
+        function labToXYZ(L, a, b) {
+            let y = (L + 16) / 116;
+            let x = a / 500 + y;
+            let z = y - b / 200;
+
+            const fx = x > 0.206897 ? Math.pow(x, 3) : (x - 16/116) / 7.787;
+            const fy = y > 0.206897 ? Math.pow(y, 3) : (y - 16/116) / 7.787;
+            const fz = z > 0.206897 ? Math.pow(z, 3) : (z - 16/116) / 7.787;
+
+            // D65 white point
+            const X = fx * 95.047;
+            const Y = fy * 100.000;
+            const Z = fz * 108.883;
+
+            return { X, Y, Z };
+        }
+
+        // XYZ to RGB conversion (sRGB color space)
+        function xyzToRGB(X, Y, Z) {
+            // Normalize XYZ
+            const x = X / 100;
+            const y = Y / 100;
+            const z = Z / 100;
+
+            // Convert to linear RGB
+            let r = x *  3.2406 + y * -1.5372 + z * -0.4986;
+            let g = x * -0.9689 + y *  1.8758 + z *  0.0415;
+            let b = x *  0.0557 + y * -0.2040 + z *  1.0570;
+
+            // Apply gamma correction
+            const gamma = (c) => {
+                if (c > 0.0031308) {
+                    return 1.055 * Math.pow(c, 1/2.4) - 0.055;
+                } else {
+                    return 12.92 * c;
+                }
+            };
+
+            r = gamma(r);
+            g = gamma(g);
+            b = gamma(b);
+
+            // Clamp and convert to 0-255 range
+            r = Math.max(0, Math.min(1, r)) * 255;
+            g = Math.max(0, Math.min(1, g)) * 255;
+            b = Math.max(0, Math.min(1, b)) * 255;
+
+            return {
+                r: Math.round(r),
+                g: Math.round(g),
+                b: Math.round(b)
+            };
+        }
+
+        // Convert LAB to RGB
+        function labToRGB(L, a, b) {
+            const xyz = labToXYZ(L, a, b);
+            return xyzToRGB(xyz.X, xyz.Y, xyz.Z);
+        }
+
+        // RGB to Hex conversion
+        function rgbToHex(r, g, b) {
+            const toHex = (n) => {
+                const hex = n.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+            return '#' + toHex(r) + toHex(g) + toHex(b);
+        }
+
+        // RGB to HSV conversion
+        function rgbToHSV(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const delta = max - min;
+
+            let h = 0;
+            if (delta !== 0) {
+                if (max === r) {
+                    h = ((g - b) / delta) % 6;
+                } else if (max === g) {
+                    h = (b - r) / delta + 2;
+                } else {
+                    h = (r - g) / delta + 4;
+                }
+                h = Math.round(h * 60);
+                if (h < 0) h += 360;
+            }
+
+            const s = max === 0 ? 0 : Math.round((delta / max) * 100);
+            const v = Math.round(max * 100);
+
+            return { h, s, v };
+        }
+
+        // Update color cells based on current mode
+        function updateColorCells() {
+            const rows = document.querySelectorAll('#filamentTable tbody tr');
+
+            rows.forEach(row => {
+                const colorCell = row.querySelector('.color-cell');
+                const labStr = row.dataset.lab;
+                const lab = parseLAB(labStr);
+
+                // Calculate RGB from LAB
+                const rgb = labToRGB(lab.L, lab.a, lab.b);
+                const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+
+                let displayText = '';
+                let swatchColor = hex;
+
+                switch (currentColorMode) {
+                    case 'lab':
+                        displayText = labStr;
+                        break;
+                    case 'rgb':
+                        displayText = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+                        break;
+                    case 'hsv':
+                        const hsv = rgbToHSV(rgb.r, rgb.g, rgb.b);
+                        displayText = `${hsv.h}°, ${hsv.s}%, ${hsv.v}%`;
+                        break;
+                    case 'hex':
+                        displayText = hex.toUpperCase();
+                        break;
+                }
+
+                colorCell.innerHTML = `<span class="color-swatch" style="background-color:${swatchColor}"></span>${displayText}`;
+            });
+        }        // Sorting function
+        function sortTable(column) {
+            const table = document.getElementById('filamentTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            // Determine sort direction
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc';
+            }
+
+            rows.sort((a, b) => {
+                let aValue, bValue;
+
+                if (column === 'brand') {
+                    aValue = a.cells[0].textContent.trim();
+                    bValue = b.cells[0].textContent.trim();
+                    return currentSort.direction === 'asc'
+                        ? aValue.localeCompare(bValue)
+                        : bValue.localeCompare(aValue);
+                } else if (column === 'polymer') {
+                    aValue = a.cells[1].textContent.trim();
+                    bValue = b.cells[1].textContent.trim();
+                    return currentSort.direction === 'asc'
+                        ? aValue.localeCompare(bValue)
+                        : bValue.localeCompare(aValue);
+                } else if (column === 'color') {
+                    // Sort by LAB lightness (first value)
+                    const aLab = parseLAB(a.dataset.lab);
+                    const bLab = parseLAB(b.dataset.lab);
+
+                    // Clear all sort button active states first
+                    document.querySelectorAll('.color-mode-btn[data-sort]').forEach(b => b.classList.remove('active'));
+
+                    // Sync with lightness button state
+                    sortStates.lightness = currentSort.direction;
+                    const lightnessBtn = document.querySelector('.color-mode-btn[data-sort="lightness"]');
+                    if (lightnessBtn) {
+                        updateSortButtonText(lightnessBtn, 'lightness');
+                        lightnessBtn.classList.add('active');
+                    }
+
+                    return currentSort.direction === 'asc'
+                        ? aLab.L - bLab.L
+                        : bLab.L - aLab.L;
+                } else if (column === 'cost') {
+                    // Sort by cost (numeric)
+                    aValue = parseFloat(a.cells[3].textContent.trim());
+                    bValue = parseFloat(b.cells[3].textContent.trim());
+                    return currentSort.direction === 'asc'
+                        ? aValue - bValue
+                        : bValue - aValue;
+                }
+            });
+
+            // Re-append rows in sorted order
+            rows.forEach(row => tbody.appendChild(row));
+
+            // Update header indicators
+            updateSortIndicators(column);
+
+            // Clear other sort button active states when clicking column headers
+            if (column !== 'color') {
+                document.querySelectorAll('.color-mode-btn[data-sort]').forEach(b => b.classList.remove('active'));
+            }
+        }
+
+        function updateSortIndicators(activeColumn) {
+            const headers = document.querySelectorAll('th[data-sort]');
+            headers.forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+                if (th.dataset.sort === activeColumn) {
+                    th.classList.add(currentSort.direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                }
+            });
+        }
+
+        // Event listeners
+        document.querySelectorAll('.color-mode-btn[data-mode]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button (only for color format buttons)
+                document.querySelectorAll('.color-mode-btn[data-mode]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Update color mode
+                currentColorMode = btn.dataset.mode;
+                updateColorCells();
+            });
+        });
+
+        document.querySelectorAll('th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                sortTable(th.dataset.sort);
+            });
+        });
+
+
+        // Track sort state for toggle buttons
+        let sortStates = {
+            lightness: 'desc',  // Start with high to low (↓)
+            warmth: 'asc',      // Start with cool to warm (↑)
+            strength: 'asc'     // Start with least to most (↑)
+        };
+
+        // Tint sort buttons
+        document.querySelectorAll('.color-mode-btn[data-sort]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const sortType = btn.dataset.sort;
+
+                // Toggle the direction
+                sortStates[sortType] = sortStates[sortType] === 'asc' ? 'desc' : 'asc';
+
+                // Update button text
+                updateSortButtonText(btn, sortType);
+
+                // Remove active state from all sort buttons first
+                document.querySelectorAll('.color-mode-btn[data-sort]').forEach(b => b.classList.remove('active'));
+                // Add active state to clicked button
+                btn.classList.add('active');
+
+                // Perform sort
+                sortByAttribute(sortType, sortStates[sortType]);
+            });
+        });
+
+        function updateSortButtonText(btn, sortType) {
+            const direction = sortStates[sortType];
+
+            if (sortType === 'lightness') {
+                btn.textContent = direction === 'desc' ? 'Lightness ↓' : 'Lightness ↑';
+            } else if (sortType === 'warmth') {
+                btn.textContent = direction === 'asc' ? 'Tint Warmth ↑' : 'Tint Warmth ↓';
+            } else if (sortType === 'strength') {
+                btn.textContent = direction === 'asc' ? 'Tint Strength ↑' : 'Tint Strength ↓';
+            }
+        }
+
+        // Sort by attribute
+        function sortByAttribute(sortType, direction) {
+            const table = document.getElementById('filamentTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            rows.sort((a, b) => {
+                const aLab = parseLAB(a.dataset.lab);
+                const bLab = parseLAB(b.dataset.lab);
+
+                let comparison = 0;
+
+                if (sortType === 'lightness') {
+                    // Sort by L value (lightness)
+                    comparison = aLab.L - bLab.L;
+                } else if (sortType === 'warmth') {
+                    // Sort by b value (blue-yellow axis)
+                    comparison = aLab.b - bLab.b;
+                } else if (sortType === 'strength') {
+                    // Sort by tint intensity (chroma/saturation)
+                    const aChroma = Math.sqrt(aLab.a * aLab.a + aLab.b * aLab.b);
+                    const bChroma = Math.sqrt(bLab.a * bLab.a + bLab.b * bLab.b);
+                    comparison = aChroma - bChroma;
+                }
+
+                return direction === 'asc' ? comparison : -comparison;
+            });
+
+            // Re-append rows in sorted order
+            rows.forEach(row => tbody.appendChild(row));
+
+            // Update Color column header indicator when using attribute sorts
+            const headers = document.querySelectorAll('th[data-sort]');
+            headers.forEach(th => th.classList.remove('sorted-asc', 'sorted-desc'));
+
+            const colorHeader = document.querySelector('th[data-sort="color"]');
+            if (colorHeader) {
+                colorHeader.classList.add(direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+            }
+
+            // Update current sort state to match
+            currentSort = { column: 'color', direction: direction };
+        }
+
+
+
+        // Initialize
+        updateColorCells();
+
+        // Set initial sort state to reflect natural descending brightness order
+        currentSort = { column: 'color', direction: 'desc' };
+        const colorHeader = document.querySelector('th[data-sort="color"]');
+        if (colorHeader) {
+            colorHeader.classList.add('sorted-desc');
+        }
+        const lightnessBtn = document.querySelector('.color-mode-btn[data-sort="lightness"]');
+        if (lightnessBtn) {
+            lightnessBtn.classList.add('active');
+        }
+    </script>
+</body>
+</html>
