@@ -115,9 +115,13 @@
         td {
             padding: 6px 13px;
             border: 1px solid var(--border-color);
+            transition: background-color 0.2s ease;
         }
         td:nth-child(4) {
             text-align: right;
+        }
+        tbody tr {
+            cursor: pointer;
         }
         .color-mode-switcher {
             display: flex;
@@ -147,7 +151,7 @@
             display: inline-block;
             width: 24px;
             height: 24px;
-            border: 1px solid var(--swatch-border);
+            border: 0px solid var(--swatch-border);
             border-radius: 3px;
             vertical-align: middle;
             margin-right: 8px;
@@ -167,6 +171,90 @@
         }
         .theme-toggle:hover {
             background: var(--button-hover);
+        }
+
+        /* Responsive design for mobile */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                margin-top: 16px;
+            }
+
+            h2 {
+                font-size: 1.2em;
+            }
+
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 6px 12px;
+                font-size: 0.85em;
+            }
+
+            .color-mode-switcher {
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .color-mode-btn {
+                padding: 5px 10px;
+                font-size: 0.85em;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 4px 8px;
+            }
+
+            .color-swatch {
+                width: 20px;
+                height: 20px;
+                margin-right: 6px;
+            }
+
+            /* Make table scrollable horizontally on very small screens */
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 5px;
+                font-size: 13px;
+            }
+
+            h1 {
+                font-size: 1.3em;
+            }
+
+            .color-mode-btn {
+                font-size: 0.8em;
+                padding: 4px 8px;
+            }
+
+            table {
+                font-size: 0.85em;
+            }
+
+            th, td {
+                padding: 3px 6px;
+            }
+
+            .color-swatch {
+                width: 18px;
+                height: 18px;
+                margin-right: 4px;
+            }
         }
     </style>
 </head>
@@ -194,7 +282,7 @@
         Colors are measured using my specific Pico Colorimeter in the same
         environment with the same ambient lighting and roughly the same
         temperature. The measurements are the average of 3 samples take from
-        surfaces printed along the different Cartesian axes (XY, XZ, YZ). The
+        surfaces printed along the different Cartesian planes (XY, XZ, YZ). The
         color is stored as Lab format on this webpage and all other color
         formats are derived from that value.
     </p>
@@ -208,17 +296,35 @@
         when measured this way.
     </p>
 
-    <h3>Please Note:</h3>
+    <h3>Color Swatches</h3>
     <p>
-        The color swatches shown in the Color column are only <strong>rough
-        approximations</strong> of the sampled colors and should be taken with
-        a grain of salt. They are probably most visually accurate when the page
-        is viewed in dark mode, but displaying a color in an HTML color swatch
-        or photograph on an arbitrary display cannot truly represent how these
-        3D printed samples appear when observed in person under ideal lighting
-        conditions. Regardless, I can attest that the <em>relative</em>
-        differences between colors are represented by these HTML color
-        swatches.
+        The color swatches use an advanced Floyd-Steinberg dithering algorithm
+        for maximum color accuracy. Dithering is applied in two scenarios: (1)
+        when LAB colors fall outside the sRGB gamut and cannot be precisely
+        displayed, and (2) for sub-pixel accuracy when the true color falls
+        between discrete RGB values (e.g., RGB 245.7 instead of 246). This
+        pixel-level precision is particularly important for near-white colors
+        where tiny differences are perceptually significant. Dithered swatches
+        use a carefully calculated pattern pattern of pixels to create a more
+        accurate perceptual representation than is possible with sRGB
+        colors alone.
+    </p>
+    <p>
+        Additionally, if you roll over a specific filament, the background
+        color of all filaments in the Color column will reflect the indicated
+        filament. This makes it easy to see the difference of the indicated
+        filament color versus the remaining ones. Try it!
+    </p>
+    <p>
+        Despite all these efforts to improve the accuracy, the color swatches
+        are still only <strong>rough approximations</strong> of the sampled
+        colors and should be treated as such. They are probably most
+        visually accurate when the page is viewed in dark mode, but displaying
+        a color in an HTML color swatch or photograph on an arbitrary display
+        cannot truly represent how these 3D printed samples appear when
+        observed in person under ideal lighting conditions. Regardless, I can
+        attest that the <em>relative</em> differences between colors are
+        represented by these HTML color swatches.
     </p>
 
     <h2>The Table</h2>
@@ -239,128 +345,104 @@
         <button class="color-mode-btn" data-sort="strength">Tint Strength ↑</button>
     </div>
 
-    <table id="filamentTable">
-        <thead>
-            <tr>
-                <th data-sort="brand">Brand</th>
-                <th data-sort="polymer">Color/Polymer</th>
-                <th data-sort="color">Color</th>
-                <th data-sort="cost">USD/Kg</th>
-            </tr>
+    <div class="table-container">
+        <table id="filamentTable">
+            <thead>
+                <tr>
+                    <th data-sort="brand">Brand</th>
+                    <th data-sort="polymer">Color/Polymer</th>
+                    <th data-sort="color">Color</th>
+                    <!-- <th data-sort="cost">USD/Kg</th> -->
+                </tr>
         </thead>
         <tbody>
            <tr data-lab="94.2, -2.2, -0.1">
                 <td>Sunlu</td>
                 <td>While PLA</td>
                 <td class="color-cell"></td>
-                <td>16.99</td>
+                <!-- <td>16.99</td> -->
             </tr>
             <tr data-lab="92.6, -1.8, -0.6">
                 <td>Push Plastic</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
-                <td>19.99</td>
+                <!-- <td>19.99</td> -->
             </tr>
             <tr data-lab="92.4, -2.1, -2.2">
                 <td>eSun</td>
                 <td>Basic PLA - White</td>
                 <td class="color-cell"></td>
-                <td>11.99</td>
+                <!-- <td>11.99</td> -->
             </tr>
             <tr data-lab="92.2, -2.3, -0.4">
                 <td>Hatchbox</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
-                <td>28.00</td>
+                <!-- <td>28.00</td> -->
             </tr>
             <tr data-lab="91.1, -2.0, -0.4">
                 <td>ProtoPasta</td>
                 <td>Opaque White HTPLA</td>
                 <td class="color-cell"></td>
-                <td>99.99</td>
+                <!-- <td>99.99</td> -->
             </tr>
             <tr data-lab="90.5, -2.3, -1.2">
                 <td>Overture</td>
                 <td>White Pro PLA</td>
                 <td class="color-cell"></td>
-                <td>15.65</td>
+                <!-- <td>15.65</td> -->
             </tr>
             <tr data-lab="90.4, -1.0, 0.1">
                 <td>Overture</td>
                 <td>White Matte PLA</td>
                 <td class="color-cell"></td>
-                <td>15.12</td>
+                <!-- <td>15.12</td> -->
             </tr>
             <tr data-lab="89.7, -1.9, -3.6">
                 <td>eSun</td>
                 <td>Cool White PLA</td>
                 <td class="color-cell"></td>
-                <td>22.99</td>
+                <!-- <td>22.99</td> -->
             </tr>
             <tr data-lab="89.3, 2.8, -7.8">
                 <td>Bblife</td>
                 <td>Silk White PLA</td>
                 <td class="color-cell"></td>
-                <td>21.59</td>
+                <!-- <td>21.59</td> -->
             </tr>
             <tr data-lab="87.3, 3.2, -6.5">
                 <td>Mika 3D</td>
                 <td>Silk White PLA</td>
                 <td class="color-cell"></td>
-                <td>17.09</td>
+                <!-- <td>17.09</td> -->
+            </tr>
+            <tr data-lab="85.9, 0.1, -0.8">
+                <td>Elegoo</td>
+                <td>White PLA Plus</td>
+                <td class="color-cell"></td>
+                <!-- <td>14.99</td> -->
             </tr>
             <tr data-lab="85.3, -1.4, -1.9">
                 <td>Mika 3D</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
-                <td>17.26</td>
+                <!-- <td>17.26</td> -->
             </tr>
             <tr data-lab="83.4, -1.2, -1.7">
                 <td>Prusament</td>
                 <td>Pristine White PLA</td>
                 <td class="color-cell"></td>
-                <td>26.99</td>
+                <!-- <td>26.99</td> -->
             </tr>
             <tr data-lab="83.2, 0.2, -5.1">
                 <td>3D Solutech</td>
                 <td>Real White Premium PLA</td>
                 <td class="color-cell"></td>
-                <td>19.99</td>
-            </tr>
-            <tr data-lab="">
-                <td>Elegoo</td>
-                <td>White PLA Plus</td>
-                <td class="color-cell"></td>
-                <td>14.99</td>
+                <!-- <td>19.99</td> -->
             </tr>
         </tbody>
     </table>
-
-    <h2>Notes</h2>
-
-    <p>
-        All of them, in isolation, would indeed be described as white, but when
-        placed next to one another, I can quickly see that white is a very
-        relative term. The printed samples clearly vary in brightness, but also
-        have tinting in one way or another.
-    </p>
-
-    <p>
-        It is clear to my eyes that the eSun Cool White PLA is most certainly
-        the "coolest" of the colors in that they have a distinct blueish tint
-        <em>relative to the other samples</em>. On the other side, the
-        "warmest" of these to my eyes is the 3D Solutech "Real White" Premium
-        PLA, which looks slightly magenta <em>relative to the other
-        samples</em>.
-    </p>
-
-    <p>
-        The glossiest of the samples were the Bblife Silk PLA and the Mika 3D
-        Silk PLA (naturally), but quickly followed by the ProtoPasta White PETG
-        and the 3D Solutech "Real White" PLA. The most matte-finish was (also
-        naturally), the Overture White Matte PLA sample.
-    </p>
-
+    </div>
     <script>
         // Theme management
         function getSystemTheme() {
@@ -448,40 +530,57 @@
         }
 
         // XYZ to RGB conversion (sRGB color space)
-        function xyzToRGB(X, Y, Z) {
+        function xyzToRGB(X, Y, Z, clamp = true) {
             // Normalize XYZ
             const x = X / 100;
             const y = Y / 100;
             const z = Z / 100;
 
             // Convert to linear RGB
-            let r = x *  3.2406 + y * -1.5372 + z * -0.4986;
-            let g = x * -0.9689 + y *  1.8758 + z *  0.0415;
-            let b = x *  0.0557 + y * -0.2040 + z *  1.0570;
+            let r_linear = x *  3.2406 + y * -1.5372 + z * -0.4986;
+            let g_linear = x * -0.9689 + y *  1.8758 + z *  0.0415;
+            let b_linear = x *  0.0557 + y * -0.2040 + z *  1.0570;
 
-            // Apply gamma correction
+            // Apply gamma correction (handle negative values properly)
             const gamma = (c) => {
-                if (c > 0.0031308) {
+                if (c < 0) {
+                    // Negative values can't be gamma corrected normally
+                    return -1.055 * Math.pow(-c, 1/2.4) + 0.055;
+                } else if (c > 0.0031308) {
                     return 1.055 * Math.pow(c, 1/2.4) - 0.055;
                 } else {
                     return 12.92 * c;
                 }
             };
 
-            r = gamma(r);
-            g = gamma(g);
-            b = gamma(b);
+            let r = gamma(r_linear);
+            let g = gamma(g_linear);
+            let b = gamma(b_linear);
 
-            // Clamp and convert to 0-255 range
-            r = Math.max(0, Math.min(1, r)) * 255;
-            g = Math.max(0, Math.min(1, g)) * 255;
-            b = Math.max(0, Math.min(1, b)) * 255;
+            // Check if out of gamut BEFORE clamping
+            const outOfGamut = r < 0 || r > 1 || g < 0 || g > 1 || b < 0 || b > 1;
 
-            return {
-                r: Math.round(r),
-                g: Math.round(g),
-                b: Math.round(b)
-            };
+            if (clamp) {
+                // Clamp and convert to 0-255 range
+                r = Math.max(0, Math.min(1, r)) * 255;
+                g = Math.max(0, Math.min(1, g)) * 255;
+                b = Math.max(0, Math.min(1, b)) * 255;
+
+                return {
+                    r: Math.round(r),
+                    g: Math.round(g),
+                    b: Math.round(b),
+                    outOfGamut
+                };
+            } else {
+                // Return unclamped values for dithering
+                return {
+                    r: r * 255,
+                    g: g * 255,
+                    b: b * 255,
+                    outOfGamut
+                };
+            }
         }
 
         // Convert LAB to RGB
@@ -528,16 +627,113 @@
             return { h, s, v };
         }
 
+        // Dithering functions for out-of-gamut colors and sub-pixel accuracy
+        function shouldDither(rgb) {
+            // Dither if out of gamut
+            if (rgb.outOfGamut) return true;
+
+            // Dither if we have significant fractional components (sub-pixel accuracy)
+            // Check if any channel has meaningful fractional part (> 0.1 difference from rounded)
+            const rFrac = Math.abs(rgb.r - Math.round(rgb.r));
+            const gFrac = Math.abs(rgb.g - Math.round(rgb.g));
+            const bFrac = Math.abs(rgb.b - Math.round(rgb.b));
+
+            // Use dithering if any channel has > 0.15 fractional component
+            // (This threshold avoids dithering for tiny imperceptible differences)
+            return rFrac > 0.15 || gFrac > 0.15 || bFrac > 0.15;
+        }
+
+        function createDitheredSwatch(lab, size = 24) {
+            const canvas = document.createElement('canvas');
+            canvas.width = canvas.height = size;
+            canvas.className = 'color-swatch';
+            canvas.style.display = 'inline-block';
+            canvas.style.verticalAlign = 'middle';
+            canvas.style.marginRight = '8px';
+
+            // Get unclamped RGB values
+            const xyz = labToXYZ(lab.L, lab.a, lab.b);
+            const targetRGB = xyzToRGB(xyz.X, xyz.Y, xyz.Z, false);
+
+            // Set tooltip based on reason for dithering
+            if (targetRGB.outOfGamut) {
+                canvas.title = 'Dithered: This color is outside the sRGB gamut';
+            } else {
+                canvas.title = 'Dithered: Sub-pixel accuracy for precise color representation';
+            }
+
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.createImageData(size, size);
+
+            // Create error diffusion buffer (Floyd-Steinberg dithering)
+            const errors = Array(size).fill(null).map(() =>
+                Array(size).fill(null).map(() => ({ r: 0, g: 0, b: 0 }))
+            );
+
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    const idx = (y * size + x) * 4;
+
+                    // Add accumulated error to target color
+                    let r = targetRGB.r + errors[y][x].r;
+                    let g = targetRGB.g + errors[y][x].g;
+                    let b = targetRGB.b + errors[y][x].b;
+
+                    // Clamp to valid range
+                    const newR = Math.max(0, Math.min(255, Math.round(r)));
+                    const newG = Math.max(0, Math.min(255, Math.round(g)));
+                    const newB = Math.max(0, Math.min(255, Math.round(b)));
+
+                    // Set pixel
+                    imageData.data[idx] = newR;
+                    imageData.data[idx + 1] = newG;
+                    imageData.data[idx + 2] = newB;
+                    imageData.data[idx + 3] = 255; // Alpha
+
+                    // Calculate quantization error
+                    const errR = r - newR;
+                    const errG = g - newG;
+                    const errB = b - newB;
+
+                    // Distribute error to neighboring pixels (Floyd-Steinberg)
+                    if (x + 1 < size) {
+                        errors[y][x + 1].r += errR * 7/16;
+                        errors[y][x + 1].g += errG * 7/16;
+                        errors[y][x + 1].b += errB * 7/16;
+                    }
+                    if (y + 1 < size) {
+                        if (x > 0) {
+                            errors[y + 1][x - 1].r += errR * 3/16;
+                            errors[y + 1][x - 1].g += errG * 3/16;
+                            errors[y + 1][x - 1].b += errB * 3/16;
+                        }
+                        errors[y + 1][x].r += errR * 5/16;
+                        errors[y + 1][x].g += errG * 5/16;
+                        errors[y + 1][x].b += errB * 5/16;
+                        if (x + 1 < size) {
+                            errors[y + 1][x + 1].r += errR * 1/16;
+                            errors[y + 1][x + 1].g += errG * 1/16;
+                            errors[y + 1][x + 1].b += errB * 1/16;
+                        }
+                    }
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+            return canvas;
+        }
+
         // Update color cells based on current mode
         function updateColorCells() {
             const rows = document.querySelectorAll('#filamentTable tbody tr');
+            let ditheredCount = 0;
 
             rows.forEach(row => {
                 const colorCell = row.querySelector('.color-cell');
                 const labStr = row.dataset.lab;
                 const lab = parseLAB(labStr);
 
-                // Calculate RGB from LAB
+                // Calculate RGB from LAB and check if out of gamut
                 const rgb = labToRGB(lab.L, lab.a, lab.b);
                 const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
 
@@ -560,8 +756,43 @@
                         break;
                 }
 
-                colorCell.innerHTML = `<span class="color-swatch" style="background-color:${swatchColor}"></span>${displayText}`;
+                // Clear the cell first
+                colorCell.innerHTML = '';
+
+                // Get unclamped RGB for dithering decision
+                const xyz = labToXYZ(lab.L, lab.a, lab.b);
+                const unclampedRGB = xyzToRGB(xyz.X, xyz.Y, xyz.Z, false);
+
+                // Use dithered canvas if we should dither (out of gamut OR sub-pixel accuracy)
+                if (shouldDither(unclampedRGB)) {
+                    ditheredCount++;
+                    const brandName = row.cells[0].textContent.trim();
+                    const reason = unclampedRGB.outOfGamut ? 'out-of-gamut' : 'sub-pixel';
+                    // console.log(`🎨 Dithering (${reason}): ${brandName} - LAB(${labStr}) - RGB(${unclampedRGB.r.toFixed(2)}, ${unclampedRGB.g.toFixed(2)}, ${unclampedRGB.b.toFixed(2)})`);
+
+                    const canvas = createDitheredSwatch(lab);
+                    colorCell.appendChild(canvas);
+
+                    // Add a subtle indicator that dithering is active
+                    const indicator = document.createElement('span');
+                    // indicator.textContent = '◈ ';
+                    indicator.style.opacity = '0.4';
+                    indicator.style.fontSize = '0.8em';
+                    indicator.title = unclampedRGB.outOfGamut
+                        ? 'Dithered swatch (out of gamut)'
+                        : 'Dithered swatch (sub-pixel accuracy)';
+                    colorCell.appendChild(indicator);
+
+                    const textNode = document.createTextNode(displayText);
+                    colorCell.appendChild(textNode);
+                } else {
+                    colorCell.innerHTML = `<span class="color-swatch" style="background-color:${swatchColor}"></span>${displayText}`;
+                }
             });
+
+            // if (ditheredCount > 0) {
+                // console.log(`✨ Total dithered swatches: ${ditheredCount} / ${rows.length}`);
+            // }
         }        // Sorting function
         function sortTable(column) {
             const table = document.getElementById('filamentTable');
@@ -746,10 +977,70 @@
             currentSort = { column: 'color', direction: direction };
         }
 
+        // Hover effect for color comparison
+        function setupColorComparisonHover() {
+            const rows = document.querySelectorAll('#filamentTable tbody tr');
+            const allColorCells = document.querySelectorAll('.color-cell');
+            let currentlyActiveRow = null;
 
+            function applyColorBackground(row) {
+                const labStr = row.dataset.lab;
+                if (!labStr) return;
+
+                const lab = parseLAB(labStr);
+                const rgb = labToRGB(lab.L, lab.a, lab.b);
+                const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+
+                // Apply the color as background to all color cells
+                allColorCells.forEach(cell => {
+                    cell.style.backgroundColor = hex;
+                    cell.style.color = '#000000'; // Black text for visibility on light backgrounds
+                });
+            }
+
+            function clearColorBackground() {
+                // Clear backgrounds on all color cells
+                allColorCells.forEach(cell => {
+                    cell.style.backgroundColor = '';
+                    cell.style.color = ''; // Reset to default text color
+                });
+                currentlyActiveRow = null;
+            }            rows.forEach(row => {
+                // Mouse events (desktop)
+                row.addEventListener('mouseenter', function() {
+                    applyColorBackground(this);
+                });
+
+                row.addEventListener('mouseleave', function() {
+                    clearColorBackground();
+                });
+
+                // Touch events (mobile/tablet)
+                row.addEventListener('touchstart', function(e) {
+                    // If tapping the same row, toggle off
+                    if (currentlyActiveRow === this) {
+                        clearColorBackground();
+                    } else {
+                        // Otherwise apply new color
+                        currentlyActiveRow = this;
+                        applyColorBackground(this);
+                    }
+                    // Don't prevent default - allow scrolling and other interactions
+                }, { passive: true });
+            });
+
+            // Clear on tap outside the table
+            document.addEventListener('touchstart', function(e) {
+                const table = document.getElementById('filamentTable');
+                if (table && !table.contains(e.target) && currentlyActiveRow) {
+                    clearColorBackground();
+                }
+            }, { passive: true });
+        }
 
         // Initialize
         updateColorCells();
+        setupColorComparisonHover();
 
         // Set initial sort state to reflect natural descending brightness order
         currentSort = { column: 'color', direction: 'desc' };
@@ -761,6 +1052,38 @@
         if (lightnessBtn) {
             lightnessBtn.classList.add('active');
         }
+
+        // Diagnostic: Check all colors for gamut issues
+        // console.log('=== GAMUT DIAGNOSTIC ===');
+        document.querySelectorAll('#filamentTable tbody tr').forEach(row => {
+            const labStr = row.dataset.lab;
+            if (!labStr) return;
+
+            const lab = parseLAB(labStr);
+            const xyz = labToXYZ(lab.L, lab.a, lab.b);
+
+            // Check linear RGB before gamma correction
+            const x = xyz.X / 100;
+            const y = xyz.Y / 100;
+            const z = xyz.Z / 100;
+            const r_linear = x *  3.2406 + y * -1.5372 + z * -0.4986;
+            const g_linear = x * -0.9689 + y *  1.8758 + z *  0.0415;
+            const b_linear = x *  0.0557 + y * -0.2040 + z *  1.0570;
+
+            const rgb = xyzToRGB(xyz.X, xyz.Y, xyz.Z, false);
+
+            const brandName = row.cells[0].textContent.trim();
+            const linear = `R:${r_linear.toFixed(4)} G:${g_linear.toFixed(4)} B:${b_linear.toFixed(4)}`;
+            const gammaCorrected = `R:${(rgb.r/255).toFixed(4)} G:${(rgb.g/255).toFixed(4)} B:${(rgb.b/255).toFixed(4)}`;
+
+            // if (r_linear < 0 || g_linear < 0 || b_linear < 0 || rgb.outOfGamut) {
+            //     console.log(`⚠️ OUT OF GAMUT: ${brandName}`);
+            //     console.log(`   LAB: ${labStr}`);
+            //     console.log(`   Linear RGB: ${linear}`);
+            //     console.log(`   Gamma-corrected: ${gammaCorrected}`);
+            //     console.log(`   Flag: ${rgb.outOfGamut}`);
+            // }
+        });
     </script>
 </body>
 </html>
