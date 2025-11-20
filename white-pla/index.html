@@ -299,21 +299,17 @@
     <h3>Color Swatches</h3>
     <p>
         The color swatches use an advanced Floyd-Steinberg dithering algorithm
-        for maximum color accuracy. Dithering is applied in two scenarios: (1)
-        when LAB colors fall outside the sRGB gamut and cannot be precisely
-        displayed, and (2) for sub-pixel accuracy when the true color falls
-        between discrete RGB values (e.g., RGB 245.7 instead of 246). This
-        pixel-level precision is particularly important for near-white colors
-        where tiny differences are perceptually significant. Dithered swatches
-        use a carefully calculated pattern pattern of pixels to create a more
+        for achieving sub-pixel accuracy when the true color falls between
+        discrete RGB values (e.g., RGB 245.7 instead of 246). Dithered swatches
+        use a carefully calculated pattern of pixels to create a more
         accurate perceptual representation than is possible with sRGB
         colors alone.
     </p>
     <p>
-        Additionally, if you roll over a specific filament, the background
-        color of all filaments in the Color column will reflect the indicated
-        filament. This makes it easy to see the difference of the indicated
-        filament color versus the remaining ones. Try it!
+        Additionally, if you roll over or touch a specific filament, the
+        background color of all filaments in the Color column will reflect the
+        indicated filament. This makes it easy to see the difference of the
+        indicated filament color versus the remaining ones. Try it!
     </p>
     <p>
         Despite all these efforts to improve the accuracy, the color swatches
@@ -327,7 +323,7 @@
         represented by these HTML color swatches.
     </p>
 
-    <h2>The Table</h2>
+    <h2>The Filament Table</h2>
     <p>
         The are initially organized by "lightness" (L value in Lab) from
         highest to lowest but you can click a column header to sort differently.
@@ -352,6 +348,7 @@
                     <th data-sort="brand">Brand</th>
                     <th data-sort="polymer">Color/Polymer</th>
                     <th data-sort="color">Color</th>
+                    <th data-sort="date">Date Added</th>
                     <!-- <th data-sort="cost">USD/Kg</th> -->
                 </tr>
         </thead>
@@ -360,84 +357,119 @@
                 <td>Sunlu</td>
                 <td>While PLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>16.99</td> -->
             </tr>
             <tr data-lab="92.6, -1.8, -0.6">
                 <td>Push Plastic</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>19.99</td> -->
             </tr>
             <tr data-lab="92.4, -2.1, -2.2">
                 <td>eSun</td>
                 <td>Basic PLA - White</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>11.99</td> -->
             </tr>
             <tr data-lab="92.2, -2.3, -0.4">
                 <td>Hatchbox</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>28.00</td> -->
             </tr>
             <tr data-lab="91.1, -2.0, -0.4">
                 <td>ProtoPasta</td>
                 <td>Opaque White HTPLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>99.99</td> -->
             </tr>
             <tr data-lab="90.5, -2.3, -1.2">
                 <td>Overture</td>
                 <td>White Pro PLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>15.65</td> -->
             </tr>
             <tr data-lab="90.4, -1.0, 0.1">
                 <td>Overture</td>
                 <td>White Matte PLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>15.12</td> -->
             </tr>
             <tr data-lab="89.7, -1.9, -3.6">
                 <td>eSun</td>
                 <td>Cool White PLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>22.99</td> -->
             </tr>
             <tr data-lab="89.3, 2.8, -7.8">
                 <td>Bblife</td>
                 <td>Silk White PLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>21.59</td> -->
+            </tr>
+            <tr data-lab="89.2, -0.3, -5.0">
+                <td>Cryddle</td>
+                <td>White PLA</td>
+                <td class="color-cell"></td>
+                <td data-date="20251119">19-Nov-2025</td>
+                <!-- <td>9.99</td> -->
+            </tr>
+            <tr data-lab="87.6, -0.6, -1.7">
+                <td>Soleyin</td>
+                <td>Ultra PLA White</td>
+                <td class="color-cell"></td>
+                <td data-date="20251119">19-Nov-2025</td>
+                <!-- <td>12.99</td> -->
             </tr>
             <tr data-lab="87.3, 3.2, -6.5">
                 <td>Mika 3D</td>
                 <td>Silk White PLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>17.09</td> -->
             </tr>
             <tr data-lab="85.9, 0.1, -0.8">
                 <td>Elegoo</td>
                 <td>White PLA Plus</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>14.99</td> -->
+            </tr>
+            <tr data-lab="85.7, -0.5, -0.8">
+                <td>Deeplee</td>
+                <td>White PLA</td>
+                <td class="color-cell"></td>
+                <td data-date="20251119">19-Nov-2025</td>
+                <!-- <td>11.99</td> -->
             </tr>
             <tr data-lab="85.3, -1.4, -1.9">
                 <td>Mika 3D</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>17.26</td> -->
             </tr>
             <tr data-lab="83.4, -1.2, -1.7">
                 <td>Prusament</td>
                 <td>Pristine White PLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>26.99</td> -->
             </tr>
             <tr data-lab="83.2, 0.2, -5.1">
                 <td>3D Solutech</td>
                 <td>Real White Premium PLA</td>
                 <td class="color-cell"></td>
+                <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>19.99</td> -->
             </tr>
         </tbody>
@@ -841,6 +873,15 @@
                     return currentSort.direction === 'asc'
                         ? aLab.L - bLab.L
                         : bLab.L - aLab.L;
+                } else if (column === 'date') {
+                    // Sort by date using data-date attribute (YYYYMMDD format)
+                    const aDateCell = a.cells[3];
+                    const bDateCell = b.cells[3];
+                    aValue = parseInt(aDateCell.dataset.date || '0');
+                    bValue = parseInt(bDateCell.dataset.date || '0');
+                    return currentSort.direction === 'asc'
+                        ? aValue - bValue
+                        : bValue - aValue;
                 } else if (column === 'cost') {
                     // Sort by cost (numeric)
                     aValue = parseFloat(a.cells[3].textContent.trim());
