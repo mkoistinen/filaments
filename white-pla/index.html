@@ -1037,6 +1037,12 @@
                     cell.style.backgroundColor = hex;
                     cell.style.color = '#000000'; // Black text for visibility on light backgrounds
                 });
+
+                // Also paint the entire hovered/tapped row with its color
+                Array.from(row.cells).forEach(cell => {
+                    cell.style.backgroundColor = hex;
+                    cell.style.color = '#000000'; // Black text for visibility
+                });
             }
 
             function clearColorBackground() {
@@ -1045,6 +1051,15 @@
                     cell.style.backgroundColor = '';
                     cell.style.color = ''; // Reset to default text color
                 });
+
+                // Clear all row backgrounds
+                rows.forEach(row => {
+                    Array.from(row.cells).forEach(cell => {
+                        cell.style.backgroundColor = '';
+                        cell.style.color = '';
+                    });
+                });
+
                 currentlyActiveRow = null;
             }            rows.forEach(row => {
                 // Mouse events (desktop)
