@@ -1077,7 +1077,9 @@
                     if (currentlyActiveRow === this) {
                         clearColorBackground();
                     } else {
-                        // Otherwise apply new color
+                        // Clear previous selection first
+                        clearColorBackground();
+                        // Then apply new color
                         currentlyActiveRow = this;
                         applyColorBackground(this);
                     }
