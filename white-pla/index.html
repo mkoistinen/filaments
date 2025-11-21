@@ -123,6 +123,41 @@
         tbody tr {
             cursor: pointer;
         }
+        .copy-btn {
+            display: none;
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            background: var(--button-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.85em;
+            line-height: 24px;
+            text-align: center;
+            transition: all 0.2s;
+            color: var(--text-color);
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            user-select: none;
+        }
+        .copy-btn:hover {
+            background: var(--button-hover);
+        }
+        .copy-btn:active {
+            background: var(--button-active-bg);
+            color: var(--button-active-color);
+        }
+        tbody tr:hover .copy-btn,
+        tbody tr.selected .copy-btn {
+            display: inline-block;
+        }
+        .color-cell {
+            position: relative;
+            padding-right: 40px;
+        }
         .color-mode-switcher {
             display: flex;
             gap: 5px;
@@ -820,6 +855,14 @@
                 } else {
                     colorCell.innerHTML = `<span class="color-swatch" style="background-color:${swatchColor}"></span>${displayText}`;
                 }
+
+                // Add copy button
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn';
+                copyBtn.textContent = '📋';
+                copyBtn.title = 'Copy color value to clipboard';
+                copyBtn.setAttribute('data-color-value', displayText);
+                colorCell.appendChild(copyBtn);
             });
 
             // if (ditheredCount > 0) {
@@ -1052,12 +1095,13 @@
                     cell.style.color = ''; // Reset to default text color
                 });
 
-                // Clear all row backgrounds
+                // Clear all row backgrounds and selected class
                 rows.forEach(row => {
                     Array.from(row.cells).forEach(cell => {
                         cell.style.backgroundColor = '';
                         cell.style.color = '';
                     });
+                    row.classList.remove('selected');
                 });
 
                 currentlyActiveRow = null;
@@ -1079,8 +1123,9 @@
                     } else {
                         // Clear previous selection first
                         clearColorBackground();
-                        // Then apply new color
+                        // Then apply new color and add selected class
                         currentlyActiveRow = this;
+                        this.classList.add('selected');
                         applyColorBackground(this);
                     }
                     // Don't prevent default - allow scrolling and other interactions
@@ -1099,6 +1144,45 @@
         // Initialize
         updateColorCells();
         setupColorComparisonHover();
+
+        // Copy button functionality
+        function setupCopyButtons() {
+            document.getElementById('filamentTable').addEventListener('click', function(e) {
+                if (e.target.classList.contains('copy-btn')) {
+                    const colorValue = e.target.getAttribute('data-color-value');
+                    
+                    // Copy to clipboard
+                    navigator.clipboard.writeText(colorValue).then(() => {
+                        // Visual feedback
+                        const originalText = e.target.textContent;
+                        e.target.textContent = '✓';
+                        e.target.style.background = 'var(--button-active-bg)';
+                        e.target.style.color = 'var(--button-active-color)';
+                        
+                        setTimeout(() => {
+                            e.target.textContent = originalText;
+                            e.target.style.background = '';
+                            e.target.style.color = '';
+                        }, 1000);
+                    }).catch(err => {
+                        console.error('Failed to copy:', err);
+                        // Fallback visual feedback for error
+                        const originalText = e.target.textContent;
+                        e.target.textContent = '✗';
+                        e.target.title = 'Copy failed. Clipboard access requires HTTPS or localhost.';
+                        setTimeout(() => {
+                            e.target.textContent = originalText;
+                            e.target.title = 'Copy color value to clipboard';
+                        }, 2000);
+                    });
+                    
+                    // Prevent event from bubbling to row click handlers
+                    e.stopPropagation();
+                }
+            });
+        }
+        
+        setupCopyButtons();
 
         // Set initial sort state to reflect natural descending brightness order
         currentSort = { column: 'color', direction: 'desc' };
