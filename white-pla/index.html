@@ -134,7 +134,10 @@
             font-size: 0.85em;
             transition: all 0.2s;
             color: var(--text-color);
-            float: right;
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
             user-select: none;
         }
         .copy-btn:hover {
@@ -150,6 +153,7 @@
         }
         .color-cell {
             position: relative;
+            padding-right: 40px;
         }
         .color-mode-switcher {
             display: flex;
@@ -1162,9 +1166,11 @@
                         // Fallback visual feedback for error
                         const originalText = e.target.textContent;
                         e.target.textContent = '✗';
+                        e.target.title = 'Copy failed. Clipboard access requires HTTPS or localhost.';
                         setTimeout(() => {
                             e.target.textContent = originalText;
-                        }, 1000);
+                            e.target.title = 'Copy color value to clipboard';
+                        }, 2000);
                     });
                     
                     // Prevent event from bubbling to row click handlers
