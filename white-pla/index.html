@@ -291,6 +291,230 @@
                 margin-right: 4px;
             }
         }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: var(--bg-color);
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1em;
+            background-color: var(--button-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-color);
+            opacity: 0.5;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            background: var(--button-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+            color: var(--text-color);
+        }
+
+        .modal-btn:hover:not(:disabled) {
+            background: var(--button-hover);
+        }
+
+        .modal-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal-btn.primary {
+            background: var(--button-active-bg);
+            color: var(--button-active-color);
+            border-color: var(--button-active-bg);
+        }
+
+        .modal-btn.primary:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+
+        .add-color-btn {
+            padding: 8px 16px;
+            background: var(--button-active-bg);
+            color: var(--button-active-color);
+            border: 1px solid var(--button-active-bg);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+        }
+
+        .add-color-btn:hover {
+            opacity: 0.9;
+        }
+
+        .user-color-indicator {
+            display: inline-block;
+            background-color: var(--button-active-bg);
+            color: var(--button-active-color);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        /* Delete icon styles - positioned like copy icon */
+        td {
+            position: relative;
+        }
+
+        .delete-icon {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            padding: 2px 4px;
+            background: transparent;
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        tbody tr:hover .delete-icon {
+            opacity: 0.6;
+        }
+
+        .delete-icon:hover {
+            opacity: 1 !important;
+        }
+
+        /* Confirmation modal styles */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .confirm-modal-content {
+            background-color: var(--bg-color);
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .confirm-modal-header {
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .confirm-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .confirm-btn-delete {
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            border: 1px solid #dc3545;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }
+
+        .confirm-btn-delete:hover {
+            background: #c82333;
+            border-color: #c82333;
+        }
+
+        .confirm-btn-cancel {
+            padding: 8px 16px;
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }
+
+        .confirm-btn-cancel:hover {
+            background: var(--button-hover);
+        }
     </style>
 </head>
 <body>
@@ -364,6 +588,8 @@
         highest to lowest but you can click a column header to sort differently.
     </p>
 
+    <button class="add-color-btn" onclick="openAddColorModal()">➕ Add a Color</button>
+
     <div class="color-mode-switcher">
         <strong>Color Format:</strong>
         <button class="color-mode-btn active" data-mode="lab">LAB</button>
@@ -390,7 +616,7 @@
         <tbody>
            <tr data-lab="94.2, -2.2, -0.1">
                 <td>Sunlu</td>
-                <td>While PLA</td>
+                <td>White PLA</td>
                 <td class="color-cell"></td>
                 <td data-date="20251117">17-Nov-2025</td>
                 <!-- <td>16.99</td> -->
@@ -510,6 +736,50 @@
         </tbody>
     </table>
     </div>
+
+    <!-- Add Color Modal -->
+    <div id="addColorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add a Color</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="colorName">Name</label>
+                    <input type="text" id="colorName" placeholder="" />
+                </div>
+                <div class="form-group">
+                    <label for="colorSpec">Specification</label>
+                    <input type="text" id="colorSpec" placeholder="" />
+                    <small style="display: block; margin-top: 5px; opacity: 0.7;">
+                        Supported formats: LAB (e.g., "85.9, 0.1, -0.8"), RGB (e.g., "214, 215, 216"), 
+                        HSV (e.g., "210°, 1%, 85%" or "210, 1, 85"), Hex (e.g., "#D6D7D8")
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn" onclick="closeAddColorModal()">Cancel</button>
+                <button class="modal-btn primary" id="submitColorBtn" onclick="submitColor()" disabled>Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="deleteModalHeader">
+        <div class="confirm-modal-content">
+            <div class="confirm-modal-header" id="deleteModalHeader">
+                Confirm Delete
+            </div>
+            <div class="confirm-modal-body" id="deleteModalBody">
+                Are you sure you want to delete this color?
+            </div>
+            <div class="confirm-modal-footer">
+                <button class="confirm-btn-cancel" onclick="closeDeleteConfirmation()" aria-describedby="deleteModalBody" autofocus>Cancel</button>
+                <button class="confirm-btn-delete" onclick="confirmDelete()" aria-describedby="deleteModalBody">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Theme management
         function getSystemTheme() {
@@ -1226,6 +1496,399 @@
             //     console.log(`   Flag: ${rgb.outOfGamut}`);
             // }
         });
+
+        // ===== User Color Management =====
+
+        // CSS named colors for placeholder examples
+        // Note: JavaScript doesn't provide an API to enumerate CSS named colors,
+        // so we maintain this curated list. Hex values are generated dynamically.
+        const CSS_COLOR_NAMES = [
+            'AliceBlue', 'AntiqueWhite', 'Aqua', 'Azure', 'Beige', 'Bisque', 
+            'BlanchedAlmond', 'Coral', 'Cornsilk', 'Crimson', 'Cyan', 
+            'DarkGoldenRod', 'DarkKhaki', 'DarkSalmon', 'FloralWhite', 
+            'Gainsboro', 'GhostWhite', 'Gold', 'Honeydew', 'Ivory', 
+            'Lavender', 'LavenderBlush', 'LemonChiffon', 'LightCyan', 
+            'LightGoldenRodYellow', 'LightGray', 'LightPink', 'LightSalmon', 
+            'LightYellow', 'Linen', 'MintCream', 'MistyRose', 'Moccasin', 
+            'NavajoWhite', 'OldLace', 'PapayaWhip', 'PeachPuff', 'Pink', 
+            'Plum', 'PowderBlue', 'RosyBrown', 'SeaShell', 'Silver', 
+            'Snow', 'Thistle', 'Wheat', 'White', 'WhiteSmoke'
+        ];
+
+        // Convert CSS color name to hex dynamically
+        function colorNameToHex(colorName) {
+            const ctx = document.createElement('canvas').getContext('2d');
+            ctx.fillStyle = colorName;
+            return ctx.fillStyle;
+        }
+
+        // Get random CSS color for placeholder
+        function getRandomCSSColor() {
+            const name = CSS_COLOR_NAMES[Math.floor(Math.random() * CSS_COLOR_NAMES.length)];
+            return { name, spec: colorNameToHex(name) };
+        }
+
+        // Color parsing and conversion functions
+        function parseColorSpec(spec) {
+            spec = spec.trim();
+            
+            // Try HEX format (#RRGGBB)
+            if (spec.match(/^#[0-9A-Fa-f]{6}$/)) {
+                return hexToLAB(spec);
+            }
+            
+            // Try to parse comma-separated values
+            const parts = spec.split(',').map(s => s.trim());
+            
+            if (parts.length === 3) {
+                const nums = parts.map(p => {
+                    // Remove degree symbol if present
+                    p = p.replace('°', '');
+                    // Remove percentage symbol if present
+                    p = p.replace('%', '');
+                    return parseFloat(p);
+                });
+                
+                // Check if all values are valid numbers
+                if (nums.every(n => !isNaN(n))) {
+                    // Determine format based on value ranges
+                    // LAB: L in [0,100], a and b typically in [-128, 127]
+                    // RGB: all in [0, 255]
+                    // HSV: H in [0, 360], S and V in [0, 100]
+                    
+                    const [v1, v2, v3] = nums;
+                    
+                    // Constants for color format ranges
+                    const LAB_L_MAX = 100;
+                    const RGB_MAX = 255;
+                    const HSV_H_MAX = 360;
+                    const HSV_SV_MAX = 100;
+                    
+                    // Check for HSV (H: 0-360, S: 0-100, V: 0-100)
+                    // HSV has distinct ranges, check this first
+                    if (v1 > LAB_L_MAX && v1 <= HSV_H_MAX && v2 >= 0 && v2 <= HSV_SV_MAX && v3 >= 0 && v3 <= HSV_SV_MAX) {
+                        return hsvToLAB(v1, v2, v3);
+                    }
+                    
+                    // Check for degree symbol which indicates HSV
+                    if (spec.includes('°')) {
+                        if (v1 >= 0 && v1 <= HSV_H_MAX && v2 >= 0 && v2 <= HSV_SV_MAX && v3 >= 0 && v3 <= HSV_SV_MAX) {
+                            return hsvToLAB(v1, v2, v3);
+                        }
+                    }
+                    
+                    // Check for RGB (all values 0-255, and all are integers in that range)
+                    if (v1 >= 0 && v1 <= RGB_MAX && v2 >= 0 && v2 <= RGB_MAX && v3 >= 0 && v3 <= RGB_MAX &&
+                        Number.isInteger(parseFloat(parts[0])) && 
+                        Number.isInteger(parseFloat(parts[1])) && 
+                        Number.isInteger(parseFloat(parts[2]))) {
+                        return rgbToLABConversion(v1, v2, v3);
+                    }
+                    
+                    // Default to LAB format if first value is in L range
+                    if (v1 >= 0 && v1 <= LAB_L_MAX) {
+                        return { L: v1, a: v2, b: v3 };
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        // Hex to LAB conversion
+        function hexToLAB(hex) {
+            const r = parseInt(hex.substring(1, 3), 16);
+            const g = parseInt(hex.substring(3, 5), 16);
+            const b = parseInt(hex.substring(5, 7), 16);
+            return rgbToLABConversion(r, g, b);
+        }
+
+        // RGB to LAB conversion
+        function rgbToLABConversion(r, g, b) {
+            // Convert RGB to XYZ
+            let rLinear = r / 255;
+            let gLinear = g / 255;
+            let bLinear = b / 255;
+            
+            // Inverse gamma correction
+            const invGamma = (c) => {
+                if (c > 0.04045) {
+                    return Math.pow((c + 0.055) / 1.055, 2.4);
+                } else {
+                    return c / 12.92;
+                }
+            };
+            
+            rLinear = invGamma(rLinear);
+            gLinear = invGamma(gLinear);
+            bLinear = invGamma(bLinear);
+            
+            // Convert to XYZ (D65 illuminant)
+            const x = (rLinear * 0.4124564 + gLinear * 0.3575761 + bLinear * 0.1804375) * 100;
+            const y = (rLinear * 0.2126729 + gLinear * 0.7151522 + bLinear * 0.0721750) * 100;
+            const z = (rLinear * 0.0193339 + gLinear * 0.1191920 + bLinear * 0.9503041) * 100;
+            
+            // Convert XYZ to LAB
+            return xyzToLAB(x, y, z);
+        }
+
+        // XYZ to LAB conversion
+        function xyzToLAB(x, y, z) {
+            // D65 white point
+            const xn = 95.047;
+            const yn = 100.000;
+            const zn = 108.883;
+            
+            const fx = x / xn;
+            const fy = y / yn;
+            const fz = z / zn;
+            
+            const labF = (t) => {
+                const delta = 6/29;
+                if (t > Math.pow(delta, 3)) {
+                    return Math.pow(t, 1/3);
+                } else {
+                    return t / (3 * delta * delta) + 4/29;
+                }
+            };
+            
+            const L = 116 * labF(fy) - 16;
+            const a = 500 * (labF(fx) - labF(fy));
+            const b = 200 * (labF(fy) - labF(fz));
+            
+            return { L, a, b };
+        }
+
+        // HSV to LAB conversion
+        function hsvToLAB(h, s, v) {
+            // Convert HSV to RGB first
+            s = s / 100;
+            v = v / 100;
+            
+            const c = v * s;
+            const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+            const m = v - c;
+            
+            let r, g, b;
+            if (h >= 0 && h < 60) {
+                [r, g, b] = [c, x, 0];
+            } else if (h >= 60 && h < 120) {
+                [r, g, b] = [x, c, 0];
+            } else if (h >= 120 && h < 180) {
+                [r, g, b] = [0, c, x];
+            } else if (h >= 180 && h < 240) {
+                [r, g, b] = [0, x, c];
+            } else if (h >= 240 && h < 300) {
+                [r, g, b] = [x, 0, c];
+            } else {
+                [r, g, b] = [c, 0, x];
+            }
+            
+            r = Math.round((r + m) * 255);
+            g = Math.round((g + m) * 255);
+            b = Math.round((b + m) * 255);
+            
+            return rgbToLABConversion(r, g, b);
+        }
+
+        // Modal functions
+        function openAddColorModal() {
+            const modal = document.getElementById('addColorModal');
+            const nameInput = document.getElementById('colorName');
+            const specInput = document.getElementById('colorSpec');
+            const submitBtn = document.getElementById('submitColorBtn');
+            
+            // Get random CSS color for placeholders
+            const randomColor = getRandomCSSColor();
+            nameInput.placeholder = randomColor.name;
+            specInput.placeholder = randomColor.spec;
+            
+            // Clear inputs
+            nameInput.value = '';
+            specInput.value = '';
+            submitBtn.disabled = true;
+            
+            modal.style.display = 'block';
+            
+            // Focus on name input
+            setTimeout(() => nameInput.focus(), 100);
+        }
+
+        function closeAddColorModal() {
+            const modal = document.getElementById('addColorModal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('addColorModal');
+            if (event.target === modal) {
+                closeAddColorModal();
+            }
+        };
+
+        // Validate color and enable/disable submit button
+        function validateColor() {
+            const specInput = document.getElementById('colorSpec');
+            const submitBtn = document.getElementById('submitColorBtn');
+            const spec = specInput.value.trim();
+            
+            if (!spec) {
+                submitBtn.disabled = true;
+                return;
+            }
+            
+            const lab = parseColorSpec(spec);
+            submitBtn.disabled = !lab;
+        }
+
+        // Add event listener for color spec input
+        document.addEventListener('DOMContentLoaded', function() {
+            const specInput = document.getElementById('colorSpec');
+            if (specInput) {
+                specInput.addEventListener('input', validateColor);
+            }
+        });
+
+        // Submit color
+        function submitColor() {
+            const nameInput = document.getElementById('colorName');
+            const specInput = document.getElementById('colorSpec');
+            
+            const name = nameInput.value.trim() || nameInput.placeholder;
+            const spec = specInput.value.trim();
+            
+            const lab = parseColorSpec(spec);
+            
+            if (!lab) {
+                alert('Invalid color specification. Please use one of these formats:\n' +
+                      '• LAB: "85.9, 0.1, -0.8"\n' +
+                      '• RGB: "214, 215, 216"\n' +
+                      '• HSV: "210°, 1%, 85%" or "210, 1, 85"\n' +
+                      '• Hex: "#D6D7D8"');
+                return;
+            }
+            
+            // Add color to table
+            addUserColor(name, lab);
+            
+            // Close modal
+            closeAddColorModal();
+        }
+
+        // Load user colors from localStorage
+        function loadUserColors() {
+            try {
+                const stored = localStorage.getItem('userColors');
+                if (stored) {
+                    const userColors = JSON.parse(stored);
+                    userColors.forEach(color => {
+                        // Parse LAB string to object if needed
+                        let lab = color.lab;
+                        if (typeof lab === 'string') {
+                            lab = parseLAB(lab);
+                        }
+                        addUserColorRow(color.name, lab, false);
+                    });
+                }
+            } catch (e) {
+                console.error('Error loading user colors:', e);
+            }
+        }
+
+        // Save user colors to localStorage
+        function saveUserColors() {
+            try {
+                const rows = document.querySelectorAll('#filamentTable tbody tr[data-user-color="true"]');
+                const userColors = Array.from(rows).map(row => ({
+                    name: row.dataset.colorName, // Extract name from data attribute to avoid including HTML elements
+                    lab: row.dataset.lab
+                }));
+                localStorage.setItem('userColors', JSON.stringify(userColors));
+            } catch (e) {
+                console.error('Error saving user colors:', e);
+            }
+        }
+
+        // Add user color
+        function addUserColor(name, lab) {
+            addUserColorRow(name, lab, true);
+            saveUserColors();
+        }
+
+        // Add user color row to table
+        function addUserColorRow(name, lab, shouldSort = true) {
+            const table = document.getElementById('filamentTable');
+            const tbody = table.querySelector('tbody');
+            
+            const row = document.createElement('tr');
+            row.dataset.lab = `${lab.L.toFixed(1)}, ${lab.a.toFixed(1)}, ${lab.b.toFixed(1)}`;
+            row.dataset.userColor = 'true';
+            row.dataset.colorName = name; // Store the name separately
+            
+            // Get today's date in YYYYMMDD format
+            const today = new Date();
+            const dateStr = today.getFullYear() + 
+                          String(today.getMonth() + 1).padStart(2, '0') + 
+                          String(today.getDate()).padStart(2, '0');
+            const displayDate = String(today.getDate()).padStart(2, '0') + '-' + 
+                              ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][today.getMonth()] + '-' +
+                              today.getFullYear();
+            
+            row.innerHTML = `
+                <td>${name}</td>
+                <td>User Specified<button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete this color" aria-label="Delete this color" role="button">🗑️</button></td>
+                <td class="color-cell"></td>
+                <td data-date="${dateStr}">${displayDate}</td>
+            `;
+            
+            tbody.appendChild(row);
+            
+            // Update the color cell
+            updateColorCells();
+            
+            // Re-setup hover effect for the new row
+            setupColorComparisonHover();
+            
+            // Sort table if requested
+            if (shouldSort && currentSort.column) {
+                sortTable(currentSort.column);
+            }
+        }
+
+        // Delete user color - show confirmation modal
+        let rowToDelete = null;
+
+        function showDeleteConfirmation(btn) {
+            rowToDelete = btn.closest('tr');
+            const modal = document.getElementById('deleteConfirmModal');
+            modal.style.display = 'block';
+        }
+
+        function closeDeleteConfirmation() {
+            const modal = document.getElementById('deleteConfirmModal');
+            modal.style.display = 'none';
+            rowToDelete = null;
+        }
+
+        function confirmDelete() {
+            if (rowToDelete) {
+                rowToDelete.remove();
+                saveUserColors();
+                closeDeleteConfirmation();
+            }
+        }
+
+        // Close confirmation modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('deleteConfirmModal');
+            if (event.target === modal) {
+                closeDeleteConfirmation();
+            }
+        });
+
+        // Load user colors on page load
+        loadUserColors();
     </script>
 </body>
 </html>
