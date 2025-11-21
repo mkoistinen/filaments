@@ -1853,8 +1853,9 @@
             setupColorComparisonHover();
             
             // Sort table if requested
-            if (shouldSort && currentSort.column) {
-                sortTable(currentSort.column);
+            if (shouldSort) {
+                // Use sortByAttribute to maintain the current sort direction without toggling
+                sortByAttribute('lightness', sortStates.lightness);
             }
         }
 
