@@ -730,17 +730,17 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteConfirmModal" class="confirm-modal">
+    <div id="deleteConfirmModal" class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="deleteModalHeader">
         <div class="confirm-modal-content">
-            <div class="confirm-modal-header">
+            <div class="confirm-modal-header" id="deleteModalHeader">
                 Confirm Delete
             </div>
-            <div class="confirm-modal-body">
+            <div class="confirm-modal-body" id="deleteModalBody">
                 Are you sure you want to delete this color?
             </div>
             <div class="confirm-modal-footer">
-                <button class="confirm-btn-cancel" onclick="closeDeleteConfirmation()">Cancel</button>
-                <button class="confirm-btn-delete" onclick="confirmDelete()">Delete</button>
+                <button class="confirm-btn-cancel" onclick="closeDeleteConfirmation()" aria-describedby="deleteModalBody" autofocus>Cancel</button>
+                <button class="confirm-btn-delete" onclick="confirmDelete()" aria-describedby="deleteModalBody">Delete</button>
             </div>
         </div>
     </div>
@@ -1416,60 +1416,32 @@
         // ===== User Color Management =====
 
         // CSS named colors for placeholder examples
-        const CSS_NAMED_COLORS = [
-            { name: 'AliceBlue', spec: '#F0F8FF' },
-            { name: 'AntiqueWhite', spec: '#FAEBD7' },
-            { name: 'Aqua', spec: '#00FFFF' },
-            { name: 'Azure', spec: '#F0FFFF' },
-            { name: 'Beige', spec: '#F5F5DC' },
-            { name: 'Bisque', spec: '#FFE4C4' },
-            { name: 'BlanchedAlmond', spec: '#FFEBCD' },
-            { name: 'Coral', spec: '#FF7F50' },
-            { name: 'Cornsilk', spec: '#FFF8DC' },
-            { name: 'Crimson', spec: '#DC143C' },
-            { name: 'Cyan', spec: '#00FFFF' },
-            { name: 'DarkGoldenRod', spec: '#B8860B' },
-            { name: 'DarkKhaki', spec: '#BDB76B' },
-            { name: 'DarkSalmon', spec: '#E9967A' },
-            { name: 'FloralWhite', spec: '#FFFAF0' },
-            { name: 'Gainsboro', spec: '#DCDCDC' },
-            { name: 'GhostWhite', spec: '#F8F8FF' },
-            { name: 'Gold', spec: '#FFD700' },
-            { name: 'Honeydew', spec: '#F0FFF0' },
-            { name: 'Ivory', spec: '#FFFFF0' },
-            { name: 'Lavender', spec: '#E6E6FA' },
-            { name: 'LavenderBlush', spec: '#FFF0F5' },
-            { name: 'LemonChiffon', spec: '#FFFACD' },
-            { name: 'LightCyan', spec: '#E0FFFF' },
-            { name: 'LightGoldenRodYellow', spec: '#FAFAD2' },
-            { name: 'LightGray', spec: '#D3D3D3' },
-            { name: 'LightPink', spec: '#FFB6C1' },
-            { name: 'LightSalmon', spec: '#FFA07A' },
-            { name: 'LightYellow', spec: '#FFFFE0' },
-            { name: 'Linen', spec: '#FAF0E6' },
-            { name: 'MintCream', spec: '#F5FFFA' },
-            { name: 'MistyRose', spec: '#FFE4E1' },
-            { name: 'Moccasin', spec: '#FFE4B5' },
-            { name: 'NavajoWhite', spec: '#FFDEAD' },
-            { name: 'OldLace', spec: '#FDF5E6' },
-            { name: 'PapayaWhip', spec: '#FFEFD5' },
-            { name: 'PeachPuff', spec: '#FFDAB9' },
-            { name: 'Pink', spec: '#FFC0CB' },
-            { name: 'Plum', spec: '#DDA0DD' },
-            { name: 'PowderBlue', spec: '#B0E0E6' },
-            { name: 'RosyBrown', spec: '#BC8F8F' },
-            { name: 'SeaShell', spec: '#FFF5EE' },
-            { name: 'Silver', spec: '#C0C0C0' },
-            { name: 'Snow', spec: '#FFFAFA' },
-            { name: 'Thistle', spec: '#D8BFD8' },
-            { name: 'Wheat', spec: '#F5DEB3' },
-            { name: 'White', spec: '#FFFFFF' },
-            { name: 'WhiteSmoke', spec: '#F5F5F5' }
+        // Note: JavaScript doesn't provide an API to enumerate CSS named colors,
+        // so we maintain this curated list. Hex values are generated dynamically.
+        const CSS_COLOR_NAMES = [
+            'AliceBlue', 'AntiqueWhite', 'Aqua', 'Azure', 'Beige', 'Bisque', 
+            'BlanchedAlmond', 'Coral', 'Cornsilk', 'Crimson', 'Cyan', 
+            'DarkGoldenRod', 'DarkKhaki', 'DarkSalmon', 'FloralWhite', 
+            'Gainsboro', 'GhostWhite', 'Gold', 'Honeydew', 'Ivory', 
+            'Lavender', 'LavenderBlush', 'LemonChiffon', 'LightCyan', 
+            'LightGoldenRodYellow', 'LightGray', 'LightPink', 'LightSalmon', 
+            'LightYellow', 'Linen', 'MintCream', 'MistyRose', 'Moccasin', 
+            'NavajoWhite', 'OldLace', 'PapayaWhip', 'PeachPuff', 'Pink', 
+            'Plum', 'PowderBlue', 'RosyBrown', 'SeaShell', 'Silver', 
+            'Snow', 'Thistle', 'Wheat', 'White', 'WhiteSmoke'
         ];
+
+        // Convert CSS color name to hex dynamically
+        function colorNameToHex(colorName) {
+            const ctx = document.createElement('canvas').getContext('2d');
+            ctx.fillStyle = colorName;
+            return ctx.fillStyle;
+        }
 
         // Get random CSS color for placeholder
         function getRandomCSSColor() {
-            return CSS_NAMED_COLORS[Math.floor(Math.random() * CSS_NAMED_COLORS.length)];
+            const name = CSS_COLOR_NAMES[Math.floor(Math.random() * CSS_COLOR_NAMES.length)];
+            return { name, spec: colorNameToHex(name) };
         }
 
         // Color parsing and conversion functions
@@ -1781,7 +1753,7 @@
             
             row.innerHTML = `
                 <td>${name}</td>
-                <td>User Specified<button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete this color">🗑️</button></td>
+                <td>User Specified<button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete this color" aria-label="Delete this color" role="button">🗑️</button></td>
                 <td class="color-cell"></td>
                 <td data-date="${dateStr}">${displayDate}</td>
             `;
