@@ -588,7 +588,7 @@
         highest to lowest but you can click a column header to sort differently.
     </p>
 
-    <button class="add-color-btn" onclick="openAddColorModal()">➕ Add a Color</button>
+    <button class="add-color-btn" onclick="openAddColorModal()">➕ Add Personal Color</button>
 
     <div class="color-mode-switcher">
         <strong>Color Format:</strong>
@@ -741,9 +741,15 @@
     <div id="addColorModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add a Color</h2>
+                <h2>Add a Personal Color</h2>
             </div>
             <div class="modal-body">
+                <p>
+                    You are adding a "personal color". Personal colors are
+                    stored in your browser's "Local Storage" and are only
+                    visible to you. You may store as many as you like (and
+                    your browser will support).
+                </p>
                 <div class="form-group">
                     <label for="colorName">Name</label>
                     <input type="text" id="colorName" placeholder="" />
@@ -752,7 +758,7 @@
                     <label for="colorSpec">Specification</label>
                     <input type="text" id="colorSpec" placeholder="" />
                     <small style="display: block; margin-top: 5px; opacity: 0.7;">
-                        Supported formats: LAB (e.g., "85.9, 0.1, -0.8"), RGB (e.g., "214, 215, 216"), 
+                        Supported formats: LAB (e.g., "85.9, 0.1, -0.8"), RGB (e.g., "214, 215, 216"),
                         HSV (e.g., "210°, 1%, 85%" or "210, 1, 85"), Hex (e.g., "#D6D7D8")
                     </small>
                 </div>
@@ -1420,7 +1426,7 @@
             document.getElementById('filamentTable').addEventListener('click', function(e) {
                 if (e.target.classList.contains('copy-btn')) {
                     const colorValue = e.target.getAttribute('data-color-value');
-                    
+
                     // Copy to clipboard
                     navigator.clipboard.writeText(colorValue).then(() => {
                         // Visual feedback
@@ -1428,7 +1434,7 @@
                         e.target.textContent = '✓';
                         e.target.style.background = 'var(--button-active-bg)';
                         e.target.style.color = 'var(--button-active-color)';
-                        
+
                         setTimeout(() => {
                             e.target.textContent = originalText;
                             e.target.style.background = '';
@@ -1445,13 +1451,13 @@
                             e.target.title = 'Copy color value to clipboard';
                         }, 2000);
                     });
-                    
+
                     // Prevent event from bubbling to row click handlers
                     e.stopPropagation();
                 }
             });
         }
-        
+
         setupCopyButtons();
 
         // Set initial sort state to reflect natural descending brightness order
@@ -1503,15 +1509,15 @@
         // Note: JavaScript doesn't provide an API to enumerate CSS named colors,
         // so we maintain this curated list. Hex values are generated dynamically.
         const CSS_COLOR_NAMES = [
-            'AliceBlue', 'AntiqueWhite', 'Aqua', 'Azure', 'Beige', 'Bisque', 
-            'BlanchedAlmond', 'Coral', 'Cornsilk', 'Crimson', 'Cyan', 
-            'DarkGoldenRod', 'DarkKhaki', 'DarkSalmon', 'FloralWhite', 
-            'Gainsboro', 'GhostWhite', 'Gold', 'Honeydew', 'Ivory', 
-            'Lavender', 'LavenderBlush', 'LemonChiffon', 'LightCyan', 
-            'LightGoldenRodYellow', 'LightGray', 'LightPink', 'LightSalmon', 
-            'LightYellow', 'Linen', 'MintCream', 'MistyRose', 'Moccasin', 
-            'NavajoWhite', 'OldLace', 'PapayaWhip', 'PeachPuff', 'Pink', 
-            'Plum', 'PowderBlue', 'RosyBrown', 'SeaShell', 'Silver', 
+            'AliceBlue', 'AntiqueWhite', 'Aqua', 'Azure', 'Beige', 'Bisque',
+            'BlanchedAlmond', 'Coral', 'Cornsilk', 'Crimson', 'Cyan',
+            'DarkGoldenRod', 'DarkKhaki', 'DarkSalmon', 'FloralWhite',
+            'Gainsboro', 'GhostWhite', 'Gold', 'Honeydew', 'Ivory',
+            'Lavender', 'LavenderBlush', 'LemonChiffon', 'LightCyan',
+            'LightGoldenRodYellow', 'LightGray', 'LightPink', 'LightSalmon',
+            'LightYellow', 'Linen', 'MintCream', 'MistyRose', 'Moccasin',
+            'NavajoWhite', 'OldLace', 'PapayaWhip', 'PeachPuff', 'Pink',
+            'Plum', 'PowderBlue', 'RosyBrown', 'SeaShell', 'Silver',
             'Snow', 'Thistle', 'Wheat', 'White', 'WhiteSmoke'
         ];
 
@@ -1531,15 +1537,15 @@
         // Color parsing and conversion functions
         function parseColorSpec(spec) {
             spec = spec.trim();
-            
+
             // Try HEX format (#RRGGBB)
             if (spec.match(/^#[0-9A-Fa-f]{6}$/)) {
                 return hexToLAB(spec);
             }
-            
+
             // Try to parse comma-separated values
             const parts = spec.split(',').map(s => s.trim());
-            
+
             if (parts.length === 3) {
                 const nums = parts.map(p => {
                     // Remove degree symbol if present
@@ -1548,50 +1554,50 @@
                     p = p.replace('%', '');
                     return parseFloat(p);
                 });
-                
+
                 // Check if all values are valid numbers
                 if (nums.every(n => !isNaN(n))) {
                     // Determine format based on value ranges
                     // LAB: L in [0,100], a and b typically in [-128, 127]
                     // RGB: all in [0, 255]
                     // HSV: H in [0, 360], S and V in [0, 100]
-                    
+
                     const [v1, v2, v3] = nums;
-                    
+
                     // Constants for color format ranges
                     const LAB_L_MAX = 100;
                     const RGB_MAX = 255;
                     const HSV_H_MAX = 360;
                     const HSV_SV_MAX = 100;
-                    
+
                     // Check for HSV (H: 0-360, S: 0-100, V: 0-100)
                     // HSV has distinct ranges, check this first
                     if (v1 > LAB_L_MAX && v1 <= HSV_H_MAX && v2 >= 0 && v2 <= HSV_SV_MAX && v3 >= 0 && v3 <= HSV_SV_MAX) {
                         return hsvToLAB(v1, v2, v3);
                     }
-                    
+
                     // Check for degree symbol which indicates HSV
                     if (spec.includes('°')) {
                         if (v1 >= 0 && v1 <= HSV_H_MAX && v2 >= 0 && v2 <= HSV_SV_MAX && v3 >= 0 && v3 <= HSV_SV_MAX) {
                             return hsvToLAB(v1, v2, v3);
                         }
                     }
-                    
+
                     // Check for RGB (all values 0-255, and all are integers in that range)
                     if (v1 >= 0 && v1 <= RGB_MAX && v2 >= 0 && v2 <= RGB_MAX && v3 >= 0 && v3 <= RGB_MAX &&
-                        Number.isInteger(parseFloat(parts[0])) && 
-                        Number.isInteger(parseFloat(parts[1])) && 
+                        Number.isInteger(parseFloat(parts[0])) &&
+                        Number.isInteger(parseFloat(parts[1])) &&
                         Number.isInteger(parseFloat(parts[2]))) {
                         return rgbToLABConversion(v1, v2, v3);
                     }
-                    
+
                     // Default to LAB format if first value is in L range
                     if (v1 >= 0 && v1 <= LAB_L_MAX) {
                         return { L: v1, a: v2, b: v3 };
                     }
                 }
             }
-            
+
             return null;
         }
 
@@ -1609,7 +1615,7 @@
             let rLinear = r / 255;
             let gLinear = g / 255;
             let bLinear = b / 255;
-            
+
             // Inverse gamma correction
             const invGamma = (c) => {
                 if (c > 0.04045) {
@@ -1618,16 +1624,16 @@
                     return c / 12.92;
                 }
             };
-            
+
             rLinear = invGamma(rLinear);
             gLinear = invGamma(gLinear);
             bLinear = invGamma(bLinear);
-            
+
             // Convert to XYZ (D65 illuminant)
             const x = (rLinear * 0.4124564 + gLinear * 0.3575761 + bLinear * 0.1804375) * 100;
             const y = (rLinear * 0.2126729 + gLinear * 0.7151522 + bLinear * 0.0721750) * 100;
             const z = (rLinear * 0.0193339 + gLinear * 0.1191920 + bLinear * 0.9503041) * 100;
-            
+
             // Convert XYZ to LAB
             return xyzToLAB(x, y, z);
         }
@@ -1638,11 +1644,11 @@
             const xn = 95.047;
             const yn = 100.000;
             const zn = 108.883;
-            
+
             const fx = x / xn;
             const fy = y / yn;
             const fz = z / zn;
-            
+
             const labF = (t) => {
                 const delta = 6/29;
                 if (t > Math.pow(delta, 3)) {
@@ -1651,11 +1657,11 @@
                     return t / (3 * delta * delta) + 4/29;
                 }
             };
-            
+
             const L = 116 * labF(fy) - 16;
             const a = 500 * (labF(fx) - labF(fy));
             const b = 200 * (labF(fy) - labF(fz));
-            
+
             return { L, a, b };
         }
 
@@ -1664,11 +1670,11 @@
             // Convert HSV to RGB first
             s = s / 100;
             v = v / 100;
-            
+
             const c = v * s;
             const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
             const m = v - c;
-            
+
             let r, g, b;
             if (h >= 0 && h < 60) {
                 [r, g, b] = [c, x, 0];
@@ -1683,11 +1689,11 @@
             } else {
                 [r, g, b] = [c, 0, x];
             }
-            
+
             r = Math.round((r + m) * 255);
             g = Math.round((g + m) * 255);
             b = Math.round((b + m) * 255);
-            
+
             return rgbToLABConversion(r, g, b);
         }
 
@@ -1697,19 +1703,19 @@
             const nameInput = document.getElementById('colorName');
             const specInput = document.getElementById('colorSpec');
             const submitBtn = document.getElementById('submitColorBtn');
-            
+
             // Get random CSS color for placeholders
             const randomColor = getRandomCSSColor();
             nameInput.placeholder = randomColor.name;
             specInput.placeholder = randomColor.spec;
-            
+
             // Clear inputs
             nameInput.value = '';
             specInput.value = '';
             submitBtn.disabled = true;
-            
+
             modal.style.display = 'block';
-            
+
             // Focus on name input
             setTimeout(() => nameInput.focus(), 100);
         }
@@ -1732,12 +1738,12 @@
             const specInput = document.getElementById('colorSpec');
             const submitBtn = document.getElementById('submitColorBtn');
             const spec = specInput.value.trim();
-            
+
             if (!spec) {
                 submitBtn.disabled = true;
                 return;
             }
-            
+
             const lab = parseColorSpec(spec);
             submitBtn.disabled = !lab;
         }
@@ -1754,12 +1760,12 @@
         function submitColor() {
             const nameInput = document.getElementById('colorName');
             const specInput = document.getElementById('colorSpec');
-            
+
             const name = nameInput.value.trim() || nameInput.placeholder;
             const spec = specInput.value.trim();
-            
+
             const lab = parseColorSpec(spec);
-            
+
             if (!lab) {
                 alert('Invalid color specification. Please use one of these formats:\n' +
                       '• LAB: "85.9, 0.1, -0.8"\n' +
@@ -1768,10 +1774,10 @@
                       '• Hex: "#D6D7D8"');
                 return;
             }
-            
+
             // Add color to table
             addUserColor(name, lab);
-            
+
             // Close modal
             closeAddColorModal();
         }
@@ -1822,36 +1828,36 @@
         function addUserColorRow(name, lab, shouldSort = true) {
             const table = document.getElementById('filamentTable');
             const tbody = table.querySelector('tbody');
-            
+
             const row = document.createElement('tr');
             row.dataset.lab = `${lab.L.toFixed(1)}, ${lab.a.toFixed(1)}, ${lab.b.toFixed(1)}`;
             row.dataset.userColor = 'true';
             row.dataset.colorName = name; // Store the name separately
-            
+
             // Get today's date in YYYYMMDD format
             const today = new Date();
-            const dateStr = today.getFullYear() + 
-                          String(today.getMonth() + 1).padStart(2, '0') + 
+            const dateStr = today.getFullYear() +
+                          String(today.getMonth() + 1).padStart(2, '0') +
                           String(today.getDate()).padStart(2, '0');
-            const displayDate = String(today.getDate()).padStart(2, '0') + '-' + 
+            const displayDate = String(today.getDate()).padStart(2, '0') + '-' +
                               ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][today.getMonth()] + '-' +
                               today.getFullYear();
-            
+
             row.innerHTML = `
                 <td>${name}</td>
                 <td>User Specified<button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete this color" aria-label="Delete this color" role="button">🗑️</button></td>
                 <td class="color-cell"></td>
                 <td data-date="${dateStr}">${displayDate}</td>
             `;
-            
+
             tbody.appendChild(row);
-            
+
             // Update the color cell
             updateColorCells();
-            
+
             // Re-setup hover effect for the new row
             setupColorComparisonHover();
-            
+
             // Sort table if requested
             if (shouldSort && currentSort.column) {
                 sortTable(currentSort.column);
