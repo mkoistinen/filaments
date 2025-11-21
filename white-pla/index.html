@@ -1790,6 +1790,8 @@
                         }
                         addUserColorRow(color.name, lab, false);
                     });
+                    // Sort table by Lightness in descending order after loading all custom colors
+                    sortByAttribute('lightness', 'desc');
                 }
             } catch (e) {
                 console.error('Error loading user colors:', e);
