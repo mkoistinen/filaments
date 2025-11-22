@@ -2129,11 +2129,36 @@
         // Share color - copy URL to clipboard
         function shareColor(btn) {
             const row = btn.closest('tr');
-            const colorName = row.dataset.colorName || row.cells[0].textContent.trim() + ' ' + row.cells[1].textContent.trim().replace(/<button.*<\/button>/g, '').trim();
+            let colorName;
+            
+            if (row.dataset.colorName) {
+                colorName = row.dataset.colorName;
+            } else {
+                // Extract color name from brand and polymer cells, excluding button elements
+                const brandName = row.cells[0].textContent.trim();
+                const polymerCell = row.cells[1].cloneNode(true);
+                // Remove all button elements from the cloned cell
+                const buttons = polymerCell.querySelectorAll('button');
+                buttons.forEach(button => button.remove());
+                const polymerName = polymerCell.textContent.trim();
+                colorName = `${brandName} ${polymerName}`;
+            }
             
             // Get current page URL without query parameters
             const baseUrl = window.location.origin + window.location.pathname;
             const shareUrl = `${baseUrl}?color-name=${encodeURIComponent(colorName)}`;
+            
+            // Check if clipboard API is available
+            if (!navigator.clipboard || !navigator.clipboard.writeText) {
+                // Fallback: show URL in alert for manual copy
+                const originalText = btn.textContent;
+                btn.textContent = 'ℹ️';
+                alert('Share this URL:\n\n' + shareUrl);
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 100);
+                return;
+            }
             
             // Copy to clipboard
             navigator.clipboard.writeText(shareUrl).then(() => {
