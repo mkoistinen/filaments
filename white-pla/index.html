@@ -616,17 +616,6 @@
             opacity: 0.9;
         }
 
-        .user-color-indicator {
-            display: inline-block;
-            background-color: var(--button-active-bg);
-            color: var(--button-active-color);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 0.75em;
-            margin-left: 8px;
-            font-weight: 600;
-        }
-
         /* Edit and Share icon styles - absolute positioning in color cell */
         td {
             position: relative;
@@ -1383,7 +1372,6 @@
         // Update color cells based on current mode
         function updateColorCells() {
             const rows = document.querySelectorAll('#filamentTable tbody tr');
-            let ditheredCount = 0;
 
             rows.forEach(row => {
                 const colorCell = row.querySelector('.color-cell');
@@ -1422,17 +1410,11 @@
 
                 // Use dithered canvas if we should dither (out of gamut OR sub-pixel accuracy)
                 if (shouldDither(unclampedRGB)) {
-                    ditheredCount++;
-                    const brandName = row.cells[0].textContent.trim();
-                    const reason = unclampedRGB.outOfGamut ? 'out-of-gamut' : 'sub-pixel';
-                    // console.log(`🎨 Dithering (${reason}): ${brandName} - LAB(${labStr}) - RGB(${unclampedRGB.r.toFixed(2)}, ${unclampedRGB.g.toFixed(2)}, ${unclampedRGB.b.toFixed(2)})`);
-
                     const canvas = createDitheredSwatch(lab);
                     colorCell.appendChild(canvas);
 
                     // Add a subtle indicator that dithering is active
                     const indicator = document.createElement('span');
-                    // indicator.textContent = '◈ ';
                     indicator.style.opacity = '0.4';
                     indicator.style.fontSize = '0.8em';
                     indicator.title = unclampedRGB.outOfGamut
@@ -1476,11 +1458,9 @@
                 copyBtn.setAttribute('data-color-value', displayText);
                 colorCell.appendChild(copyBtn);
             });
+        }
 
-            // if (ditheredCount > 0) {
-                // console.log(`✨ Total dithered swatches: ${ditheredCount} / ${rows.length}`);
-            // }
-        }        // Sorting function
+        // Sorting function
         function sortTable(column) {
             const table = document.getElementById('filamentTable');
             const tbody = table.querySelector('tbody');
@@ -1815,38 +1795,6 @@
         if (lightnessBtn) {
             lightnessBtn.classList.add('active');
         }
-
-        // Diagnostic: Check all colors for gamut issues
-        // console.log('=== GAMUT DIAGNOSTIC ===');
-        document.querySelectorAll('#filamentTable tbody tr').forEach(row => {
-            const labStr = row.dataset.lab;
-            if (!labStr) return;
-
-            const lab = parseLAB(labStr);
-            const xyz = labToXYZ(lab.L, lab.a, lab.b);
-
-            // Check linear RGB before gamma correction
-            const x = xyz.X / 100;
-            const y = xyz.Y / 100;
-            const z = xyz.Z / 100;
-            const r_linear = x *  3.2406 + y * -1.5372 + z * -0.4986;
-            const g_linear = x * -0.9689 + y *  1.8758 + z *  0.0415;
-            const b_linear = x *  0.0557 + y * -0.2040 + z *  1.0570;
-
-            const rgb = xyzToRGB(xyz.X, xyz.Y, xyz.Z, false);
-
-            const brandName = row.cells[0].textContent.trim();
-            const linear = `R:${r_linear.toFixed(4)} G:${g_linear.toFixed(4)} B:${b_linear.toFixed(4)}`;
-            const gammaCorrected = `R:${(rgb.r/255).toFixed(4)} G:${(rgb.g/255).toFixed(4)} B:${(rgb.b/255).toFixed(4)}`;
-
-            // if (r_linear < 0 || g_linear < 0 || b_linear < 0 || rgb.outOfGamut) {
-            //     console.log(`⚠️ OUT OF GAMUT: ${brandName}`);
-            //     console.log(`   LAB: ${labStr}`);
-            //     console.log(`   Linear RGB: ${linear}`);
-            //     console.log(`   Gamma-corrected: ${gammaCorrected}`);
-            //     console.log(`   Flag: ${rgb.outOfGamut}`);
-            // }
-        });
 
         // ===== User Color Management =====
 
@@ -2195,16 +2143,20 @@
             }
         }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
             const addModal = document.getElementById('addColorModal');
             const editModal = document.getElementById('editColorModal');
+            const deleteModal = document.getElementById('deleteConfirmModal');
+
             if (event.target === addModal) {
                 closeAddColorModal();
             } else if (event.target === editModal) {
                 closeEditColorModal();
+            } else if (event.target === deleteModal) {
+                closeDeleteConfirmation();
             }
-        };
+        });
 
         // Close modals with Escape key
         document.addEventListener('keydown', function(event) {
@@ -2491,14 +2443,6 @@
                 closeDeleteConfirmation();
             }
         }
-
-        // Close confirmation modal when clicking outside
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('deleteConfirmModal');
-            if (event.target === modal) {
-                closeDeleteConfirmation();
-            }
-        });
 
         // Load user colors on page load
         loadUserColors();
