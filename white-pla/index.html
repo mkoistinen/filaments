@@ -2302,6 +2302,9 @@
                         addUserColorRow(legacyColorName, 'Personal color', lab);
                     }
                     
+                    // Save to localStorage so the shared color persists
+                    saveUserColors();
+                    
                     // Remove the query parameters from the URL without reloading the page
                     // Preserve hash fragment if present
                     const newUrl = window.location.origin + window.location.pathname + window.location.hash;
