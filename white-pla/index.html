@@ -350,6 +350,9 @@
             position: relative;
             padding-right: 40px;
         }
+        tbody tr[data-user-color="true"] .color-cell {
+            padding-right: 104px;  /* Space for all 3 buttons: delete, share, copy */
+        }
         .color-mode-switcher {
             display: flex;
             gap: 5px;
@@ -586,6 +589,17 @@
             opacity: 0.9;
         }
 
+        .modal-btn.danger {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .modal-btn.danger:hover {
+            background: #c82333;
+            border-color: #bd2130;
+        }
+
         .add-color-btn {
             padding: 8px 16px;
             background: var(--button-active-bg);
@@ -613,15 +627,17 @@
             font-weight: 600;
         }
 
-        /* Delete and Share icon styles - absolute positioning */
+        /* Edit and Share icon styles - absolute positioning in color cell */
         td {
             position: relative;
         }
 
-        .delete-icon {
+        .edit-icon {
+            display: none;
             position: absolute;
-            top: 7px;
-            right: 40px;  /* Position to the left of share icon */
+            top: 50%;
+            transform: translateY(-50%);
+            right: 72px;  /* Position to the left of share icon (24px share + 24px copy + 16px gaps) */
             width: 24px;
             height: 24px;
             padding: 0;
@@ -633,23 +649,26 @@
             font-size: 0.85em;
             line-height: 24px;
             text-align: center;
-            opacity: 0;
             transition: all 0.2s;
+            user-select: none;
         }
 
-        tbody tr:hover .delete-icon {
-            opacity: 1;
+        tbody tr:hover .edit-icon,
+        tbody tr.selected .edit-icon {
+            display: inline-block;
         }
 
-        .delete-icon:hover {
+        .edit-icon:hover {
             background: var(--button-hover);
         }
 
-        /* Share icon styles - positioned to the right of delete icon */
+        /* Share icon styles - positioned between edit and copy */
         .share-icon {
+            display: none;
             position: absolute;
-            top: 7px;
-            right: 8px;  /* Rightmost position */
+            top: 50%;
+            transform: translateY(-50%);
+            right: 40px;  /* Position between delete and copy (24px copy + 8px gap) */
             width: 24px;
             height: 24px;
             padding: 0;
@@ -661,12 +680,13 @@
             font-size: 0.85em;
             line-height: 24px;
             text-align: center;
-            opacity: 0;
             transition: all 0.2s;
+            user-select: none;
         }
 
-        tbody tr:hover .share-icon {
-            opacity: 1;
+        tbody tr:hover .share-icon,
+        tbody tr.selected .share-icon {
+            display: inline-block;
         }
 
         .share-icon:hover {
@@ -1009,8 +1029,12 @@
                     your browser will support).
                 </p>
                 <div class="form-group">
-                    <label for="colorName">Name</label>
-                    <input type="text" id="colorName" placeholder="" />
+                    <label for="colorName">Brand</label>
+                    <input type="text" id="colorName" placeholder="" value="Personal color" />
+                </div>
+                <div class="form-group">
+                    <label for="colorPolymer">Color Name/Polymer</label>
+                    <input type="text" id="colorPolymer" placeholder="" />
                 </div>
                 <div class="form-group">
                     <label for="colorSpec">Specification</label>
@@ -1024,6 +1048,38 @@
             <div class="modal-footer">
                 <button class="modal-btn" onclick="closeAddColorModal()">Cancel</button>
                 <button class="modal-btn primary" id="submitColorBtn" onclick="submitColor()" disabled>Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Color Modal -->
+    <div id="editColorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Personal Color</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editColorName">Brand</label>
+                    <input type="text" id="editColorName" placeholder="" />
+                </div>
+                <div class="form-group">
+                    <label for="editColorPolymer">Color Name/Polymer</label>
+                    <input type="text" id="editColorPolymer" placeholder="" />
+                </div>
+                <div class="form-group">
+                    <label for="editColorSpec">Specification</label>
+                    <input type="text" id="editColorSpec" placeholder="" />
+                    <small style="display: block; margin-top: 5px; opacity: 0.7;">
+                        Supported formats: LAB (e.g., "85.9, 0.1, -0.8"), RGB (e.g., "214, 215, 216"),
+                        HSV (e.g., "210°, 1%, 85%" or "210, 1, 85"), Hex (e.g., "#D6D7D8")
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn" onclick="closeEditColorModal()">Cancel</button>
+                <button class="modal-btn danger" onclick="deleteColorFromEdit()">Delete</button>
+                <button class="modal-btn primary" id="saveEditColorBtn" onclick="saveEditedColor()" disabled>Save</button>
             </div>
         </div>
     </div>
@@ -1388,6 +1444,28 @@
                     colorCell.appendChild(textNode);
                 } else {
                     colorCell.innerHTML = `<span class="color-swatch" style="background-color:${swatchColor}"></span>${displayText}`;
+                }
+
+                // Add edit and share buttons for user colors
+                const isUserColor = row.dataset.userColor === 'true';
+                if (isUserColor) {
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'edit-icon';
+                    editBtn.textContent = '✎';
+                    editBtn.title = 'Edit personal color';
+                    editBtn.setAttribute('aria-label', 'Edit personal color');
+                    editBtn.setAttribute('role', 'button');
+                    editBtn.onclick = function() { openEditColorModal(this); };
+                    colorCell.appendChild(editBtn);
+
+                    const shareBtn = document.createElement('button');
+                    shareBtn.className = 'share-icon';
+                    shareBtn.textContent = '🔗';
+                    shareBtn.title = 'Share color (copy URL to clipboard)';
+                    shareBtn.setAttribute('aria-label', 'Share color');
+                    shareBtn.setAttribute('role', 'button');
+                    shareBtn.onclick = function() { shareColor(this); };
+                    colorCell.appendChild(shareBtn);
                 }
 
                 // Add copy button
@@ -1968,23 +2046,24 @@
         function openAddColorModal() {
             const modal = document.getElementById('addColorModal');
             const nameInput = document.getElementById('colorName');
+            const polymerInput = document.getElementById('colorPolymer');
             const specInput = document.getElementById('colorSpec');
             const submitBtn = document.getElementById('submitColorBtn');
 
             // Get random CSS color for placeholders
             const randomColor = getRandomCSSColor();
-            nameInput.placeholder = randomColor.name;
+            polymerInput.placeholder = randomColor.name;
             specInput.placeholder = randomColor.spec;
 
-            // Clear inputs
-            nameInput.value = '';
+            // Clear inputs (except Brand which defaults to "Personal color")
+            polymerInput.value = '';
             specInput.value = '';
             submitBtn.disabled = true;
 
             modal.style.display = 'block';
 
-            // Focus on name input
-            setTimeout(() => nameInput.focus(), 100);
+            // Focus on polymer input
+            polymerInput.focus();
         }
 
         function closeAddColorModal() {
@@ -1992,11 +2071,138 @@
             modal.style.display = 'none';
         }
 
+        // Edit Color Modal functions
+        let editingRow = null;
+        let originalEditValues = {};
+
+        function openEditColorModal(btn) {
+            editingRow = btn.closest('tr');
+            const modal = document.getElementById('editColorModal');
+            const nameInput = document.getElementById('editColorName');
+            const polymerInput = document.getElementById('editColorPolymer');
+            const specInput = document.getElementById('editColorSpec');
+            const saveBtn = document.getElementById('saveEditColorBtn');
+
+            // Get current values from the row
+            const brandName = editingRow.cells[0].textContent.trim();
+            const polymerName = getPolymerTextFromCell(editingRow.cells[1]);
+            const labStr = editingRow.dataset.lab;
+
+            // Store original values for change detection
+            originalEditValues = {
+                brand: brandName,
+                polymer: polymerName,
+                lab: labStr
+            };
+
+            // Populate inputs
+            nameInput.value = brandName;
+            polymerInput.value = polymerName;
+            specInput.value = labStr;
+
+            saveBtn.disabled = true;
+
+            modal.style.display = 'block';
+
+            // Focus on brand input
+            nameInput.focus();
+        }
+
+        function closeEditColorModal() {
+            const modal = document.getElementById('editColorModal');
+            modal.style.display = 'none';
+            editingRow = null;
+            originalEditValues = {};
+        }
+
+        function validateEditColor() {
+            const nameInput = document.getElementById('editColorName');
+            const polymerInput = document.getElementById('editColorPolymer');
+            const specInput = document.getElementById('editColorSpec');
+            const saveBtn = document.getElementById('saveEditColorBtn');
+
+            const brand = nameInput.value.trim();
+            const polymer = polymerInput.value.trim();
+            const spec = specInput.value.trim();
+
+            // Check if spec is valid
+            if (!spec) {
+                saveBtn.disabled = true;
+                return;
+            }
+
+            const lab = parseColorSpec(spec);
+            if (!lab) {
+                saveBtn.disabled = true;
+                return;
+            }
+
+            // Check if anything changed
+            const labStr = `${lab.L.toFixed(1)}, ${lab.a.toFixed(1)}, ${lab.b.toFixed(1)}`;
+            const hasChanged = brand !== originalEditValues.brand ||
+                               polymer !== originalEditValues.polymer ||
+                               labStr !== originalEditValues.lab;
+
+            saveBtn.disabled = !hasChanged;
+        }
+
+        function saveEditedColor() {
+            if (!editingRow) return;
+
+            const nameInput = document.getElementById('editColorName');
+            const polymerInput = document.getElementById('editColorPolymer');
+            const specInput = document.getElementById('editColorSpec');
+
+            const brand = nameInput.value.trim();
+            const polymer = polymerInput.value.trim();
+            const spec = specInput.value.trim();
+
+            const lab = parseColorSpec(spec);
+
+            if (!lab) {
+                alert('Invalid color specification. Please use one of these formats:\n' +
+                      '• LAB: "85.9, 0.1, -0.8"\n' +
+                      '• RGB: "214, 215, 216"\n' +
+                      '• HSV: "210°, 1%, 85%" or "210, 1, 85"\n' +
+                      '• Hex: "#D6D7D8"');
+                return;
+            }
+
+            // Update the row
+            const labStr = `${lab.L.toFixed(1)}, ${lab.a.toFixed(1)}, ${lab.b.toFixed(1)}`;
+            editingRow.dataset.lab = labStr;
+            editingRow.cells[0].textContent = brand;
+            editingRow.cells[1].textContent = polymer;
+
+            // Save to localStorage
+            saveUserColors();
+
+            // Update color cells to reflect changes
+            updateColorCells();
+
+            // Re-setup hover effect
+            setupColorComparisonHover();
+
+            // Close modal
+            closeEditColorModal();
+        }
+
+        function deleteColorFromEdit() {
+            if (editingRow) {
+                const rowToDelete = editingRow;  // Store reference before closing
+                closeEditColorModal();
+                showDeleteConfirmation(rowToDelete);
+            }
+        }
+
         // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('addColorModal');
-            if (event.target === modal) {
+            const addModal = document.getElementById('addColorModal');
+            const editModal = document.getElementById('editColorModal');
+            if (event.target === addModal) {
                 closeAddColorModal();
+            } else if (event.target === editModal) {
+                closeEditColorModal();
             }
         };
 
@@ -2021,14 +2227,26 @@
             if (specInput) {
                 specInput.addEventListener('input', validateColor);
             }
+
+            // Add event listeners for edit modal inputs
+            const editNameInput = document.getElementById('editColorName');
+            const editPolymerInput = document.getElementById('editColorPolymer');
+            const editSpecInput = document.getElementById('editColorSpec');
+            if (editNameInput && editPolymerInput && editSpecInput) {
+                editNameInput.addEventListener('input', validateEditColor);
+                editPolymerInput.addEventListener('input', validateEditColor);
+                editSpecInput.addEventListener('input', validateEditColor);
+            }
         });
 
         // Submit color
         function submitColor() {
             const nameInput = document.getElementById('colorName');
+            const polymerInput = document.getElementById('colorPolymer');
             const specInput = document.getElementById('colorSpec');
 
-            const name = nameInput.value.trim() || nameInput.placeholder;
+            const name = nameInput.value.trim();
+            const polymer = polymerInput.value.trim() || polymerInput.placeholder;
             const spec = specInput.value.trim();
 
             const lab = parseColorSpec(spec);
@@ -2043,7 +2261,7 @@
             }
 
             // Add color to table
-            addUserColor(name, lab);
+            addUserColor(name, polymer, lab);
 
             // Close modal
             closeAddColorModal();
@@ -2109,8 +2327,8 @@
         }
 
         // Add user color
-        function addUserColor(name, lab) {
-            addUserColorRow(name, 'Personal color', lab, true);
+        function addUserColor(name, polymer, lab) {
+            addUserColorRow(name, polymer, lab, true);
             saveUserColors();
         }
 
@@ -2148,7 +2366,7 @@
 
             row.innerHTML = `
                 <td>${brandName}</td>
-                <td>${polymerName}<button class="share-icon" onclick="shareColor(this)" title="Share color (copy URL to clipboard)" aria-label="Share color" role="button">🔗</button><button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete personal color" aria-label="Delete personal color" role="button">×</button></td>
+                <td>${polymerName}</td>
                 <td class="color-cell"></td>
                 <td></td>
                 <td data-date="${dateStr}">${displayDate}</td>
@@ -2232,8 +2450,13 @@
         // Delete user color - show confirmation modal
         let rowToDelete = null;
 
-        function showDeleteConfirmation(btn) {
-            rowToDelete = btn.closest('tr');
+        function showDeleteConfirmation(btnOrRow) {
+            // Accept either a button element or a row element
+            if (btnOrRow.tagName === 'TR') {
+                rowToDelete = btnOrRow;
+            } else {
+                rowToDelete = btnOrRow.closest('tr');
+            }
             const modal = document.getElementById('deleteConfirmModal');
             modal.style.display = 'block';
         }
