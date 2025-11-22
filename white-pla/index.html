@@ -168,6 +168,9 @@
             --button-active-color: #fff;
             --heading-border: #eaecef;
             --swatch-border: #999;
+            --link-color: #0969da;
+            --link-visited-color: #8250df;
+            --link-hover-color: #0550ae;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -183,6 +186,9 @@
                 --button-active-color: #fff;
                 --heading-border: #21262d;
                 --swatch-border: #6e7681;
+                --link-color: #58a6ff;
+                --link-visited-color: #bc8cff;
+                --link-hover-color: #79c0ff;
             }
         }
 
@@ -198,6 +204,9 @@
             --button-active-color: #fff;
             --heading-border: #eaecef;
             --swatch-border: #999;
+            --link-color: #0969da;
+            --link-visited-color: #8250df;
+            --link-hover-color: #0550ae;
         }
 
         body.dark-mode {
@@ -212,6 +221,9 @@
             --button-active-color: #fff;
             --heading-border: #21262d;
             --swatch-border: #6e7681;
+            --link-color: #58a6ff;
+            --link-visited-color: #bc8cff;
+            --link-hover-color: #79c0ff;
         }
 
         body {
@@ -223,6 +235,15 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
+        }
+        a {
+            color: var(--link-color);
+        }
+        a:visited {
+            color: var(--link-visited-color);
+        }
+        a:hover {
+            color: var(--link-hover-color);
         }
         h1 {
             border-bottom: 1px solid var(--heading-border);
