@@ -2256,28 +2256,36 @@
                 const labStr = urlParams.get('lab');
                 
                 if (colorName && labStr) {
-                    // Parse LAB string
-                    const lab = parseLAB(labStr);
+                    // Parse LAB string with error handling
+                    let lab;
+                    try {
+                        lab = parseLAB(labStr);
+                    } catch (parseError) {
+                        console.error('Error parsing LAB values:', parseError);
+                        alert('Invalid shared link: Unable to parse color data.');
+                        return;
+                    }
                     
-                    // Validate LAB values are valid numbers
-                    if (lab && 
-                        typeof lab.L === 'number' && !isNaN(lab.L) &&
-                        typeof lab.a === 'number' && !isNaN(lab.a) &&
-                        typeof lab.b === 'number' && !isNaN(lab.b)) {
-                        // Add the shared color to the table
-                        addUserColor(colorName, lab);
-                        
-                        // Remove the query parameters from the URL without reloading the page
-                        // Preserve hash fragment if present
-                        const newUrl = window.location.origin + window.location.pathname + window.location.hash;
-                        window.history.replaceState({}, document.title, newUrl);
-                    } else {
+                    // Validate LAB object exists and values are valid numbers
+                    if (!lab || 
+                        typeof lab.L !== 'number' || isNaN(lab.L) ||
+                        typeof lab.a !== 'number' || isNaN(lab.a) ||
+                        typeof lab.b !== 'number' || isNaN(lab.b)) {
                         console.error('Invalid LAB values in shared link:', labStr);
                         alert('Invalid shared link: The color data is malformed.');
+                        return;
                     }
+                    
+                    // Add the shared color to the table
+                    addUserColor(colorName, lab);
+                    
+                    // Remove the query parameters from the URL without reloading the page
+                    // Preserve hash fragment if present
+                    const newUrl = window.location.origin + window.location.pathname + window.location.hash;
+                    window.history.replaceState({}, document.title, newUrl);
                 }
             } catch (error) {
-                console.error('Error parsing shared color from URL:', error);
+                console.error('Error loading shared color from URL:', error);
                 alert('Unable to load shared color: Invalid URL parameters.');
             }
         }
