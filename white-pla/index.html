@@ -732,7 +732,7 @@
         come across.
     </p>
     <p>
-        I previously posted my results on a <a href="https://www.reddit.com/r/3Dprinting/comments/10tv174/quality_white_pla_filament/" rel="noopener noreferrer"><img src="https://www.google.com/s2/favicons?domain=reddit.com&amp;sz=12" alt="Reddit icon" class="favicon"> Reddit post</a> in the 3Dprinting
+        I previously posted my results on a <a href="https://www.reddit.com/r/3Dprinting/comments/10tv174/quality_white_pla_filament/" rel="noopener noreferrer"><img src="https://www.google.com/s2/favicons?domain=reddit.com&amp;sz=12" alt="Reddit" class="favicon"> Reddit post</a> in the 3Dprinting
         sub-reddit. However, at some point, I was unable to update the post with
         new filaments due to age or perhaps post-length, so, this page was born.
     </p>
@@ -743,8 +743,12 @@
         environment with the same ambient lighting and roughly the same
         temperature. The measurements are the average of 3 samples take from
         surfaces printed along the different Cartesian planes (XY, XZ, YZ). The
-        color is stored as Lab format on this webpage and all other color
-        formats are derived from that value.
+        color is stored as <a href="https://en.wikipedia.org/wiki/CIELAB_color_space"><img src="https://www.google.com/s2/favicons?domain=wikipedia.com&amp;sz=12" alt="Wikipedia" class="favicon"> CIELAB</a>
+        (Also "L.a.b." or just "Lab") format&mdash;which is the highest
+        resolution color specification my Pico device can produce&mdash;on this
+        webpage and all other color formats are derived from that value. And
+        all sorting is done against the Lab color despite which color format is
+        selected for display.
     </p>
     <p>
         The recorded values are different than previously presented on the
@@ -759,12 +763,12 @@
     <section aria-labelledby="color-swatches-heading">
     <h3 id="color-swatches-heading">Color Swatches</h3>
     <p>
-        The color swatches use an advanced Floyd-Steinberg dithering algorithm
-        for achieving sub-pixel accuracy when the true color falls between
+        The color swatches shown in the Color column of the table below use a
+        <a href="https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering"><img src="https://www.google.com/s2/favicons?domain=wikipedia.com&amp;sz=12" alt="Wikipedia" class="favicon"> Floyd-Steinberg dithering algorithm</a>
+        for achieving sub-pixel accuracy when the Lab color falls between
         discrete RGB values (e.g., RGB 245.7 instead of 246). Dithered swatches
-        use a carefully calculated pattern of pixels to create a more
-        accurate perceptual representation than is possible with sRGB
-        colors alone.
+        use a carefully calculated pattern of pixels to create a more accurate
+        perceptual representation than is possible with sRGB colors alone.
     </p>
     <p>
         Additionally, if you roll over or touch a specific filament, the
@@ -775,12 +779,12 @@
     <p>
         Despite all these efforts to improve the accuracy, the color swatches
         are still only <strong>rough approximations</strong> of the sampled
-        colors and should be treated as such. They are probably most
-        visually accurate when the page is viewed in dark mode, but displaying
-        a color in an HTML color swatch or photograph on an arbitrary display
+        colors and should be treated as such. They are probably most visually
+        accurate when the page is viewed in dark mode, but displaying a color
+        in an HTML color swatch or even a photograph on an arbitrary display
         cannot truly represent how these 3D printed samples appear when
-        observed in person under ideal lighting conditions. Regardless, I can
-        attest that the <em>relative</em> differences between colors are
+        observed in person under arbitrary lighting conditions. Regardless, I
+        can attest that the <em>relative</em> differences between colors are
         represented by these HTML color swatches.
     </p>
     </section>
@@ -794,7 +798,7 @@
 
     <div class="color-mode-switcher">
         <strong>Color Format:</strong>
-        <button class="color-mode-btn active" data-mode="lab">LAB</button>
+        <button class="color-mode-btn active" data-mode="lab">Lab</button>
         <button class="color-mode-btn" data-mode="rgb">RGB</button>
         <button class="color-mode-btn" data-mode="hsv">HSV</button>
         <button class="color-mode-btn" data-mode="hex">Hex</button>
