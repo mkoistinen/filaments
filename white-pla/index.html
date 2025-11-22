@@ -2162,9 +2162,12 @@
                 colorName = `${brandName} ${polymerName}`;
             }
             
+            // Get LAB values from the row
+            const labStr = row.dataset.lab;
+            
             // Get current page URL without query parameters
             const baseUrl = window.location.origin + window.location.pathname;
-            const shareUrl = `${baseUrl}?color-name=${encodeURIComponent(colorName)}`;
+            const shareUrl = `${baseUrl}?color-name=${encodeURIComponent(colorName)}&lab=${encodeURIComponent(labStr)}`;
             
             // Check if clipboard API is available
             if (!navigator.clipboard || !navigator.clipboard.writeText) {
@@ -2237,6 +2240,29 @@
 
         // Load user colors on page load
         loadUserColors();
+
+        // Check for shared color in URL parameters
+        function loadSharedColor() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const colorName = urlParams.get('color-name');
+            const labStr = urlParams.get('lab');
+            
+            if (colorName && labStr) {
+                // Parse LAB string
+                const lab = parseLAB(labStr);
+                if (lab) {
+                    // Add the shared color to the table
+                    addUserColor(colorName, lab);
+                    
+                    // Remove the query parameters from the URL without reloading the page
+                    const newUrl = window.location.origin + window.location.pathname;
+                    window.history.replaceState({}, document.title, newUrl);
+                }
+            }
+        }
+        
+        // Load shared color if present in URL
+        loadSharedColor();
 
         // Add share icons to all predefined filament rows
         function addShareIconsToStaticRows() {
