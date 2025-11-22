@@ -2054,7 +2054,14 @@
                         if (typeof lab === 'string') {
                             lab = parseLAB(lab);
                         }
-                        addUserColorRow(color.name, lab, false, color.dateAdded);
+                        
+                        // Support both new format (brand + polymer) and legacy format (name only)
+                        if (color.brand && color.polymer) {
+                            addUserColorRow(color.brand, color.polymer, lab, false, color.dateAdded);
+                        } else if (color.name) {
+                            // Legacy format
+                            addUserColorRow(color.name, 'Personal color', lab, false, color.dateAdded);
+                        }
                     });
                     // Sort table by Lightness using the initial sort state after loading all custom colors
                     sortByAttribute('lightness', sortStates.lightness);
@@ -2070,10 +2077,17 @@
                 const rows = document.querySelectorAll('#filamentTable tbody tr[data-user-color="true"]');
                 const userColors = Array.from(rows).map(row => {
                     const dateCell = row.cells[4];
+                    const brandCell = row.cells[0];
+                    const polymerCell = row.cells[1].cloneNode(true);
+                    // Remove buttons from polymer cell before getting text
+                    const buttons = polymerCell.querySelectorAll('button');
+                    buttons.forEach(button => button.remove());
+                    
                     return {
-                        name: row.dataset.colorName, // Extract name from data attribute to avoid including HTML elements
+                        brand: brandCell.textContent.trim(),
+                        polymer: polymerCell.textContent.trim(),
                         lab: row.dataset.lab,
-                        dateAdded: dateCell.dataset.date // Save the date when the color was added
+                        dateAdded: dateCell.dataset.date
                     };
                 });
                 localStorage.setItem('userColors', JSON.stringify(userColors));
@@ -2084,19 +2098,18 @@
 
         // Add user color
         function addUserColor(name, lab) {
-            addUserColorRow(name, lab, true);
+            addUserColorRow(name, 'Personal color', lab, true);
             saveUserColors();
         }
 
         // Add user color row to table
-        function addUserColorRow(name, lab, shouldSort = true, dateAdded = null) {
+        function addUserColorRow(brandName, polymerName, lab, shouldSort = true, dateAdded = null) {
             const table = document.getElementById('filamentTable');
             const tbody = table.querySelector('tbody');
 
             const row = document.createElement('tr');
             row.dataset.lab = `${lab.L.toFixed(1)}, ${lab.a.toFixed(1)}, ${lab.b.toFixed(1)}`;
             row.dataset.userColor = 'true';
-            row.dataset.colorName = name; // Store the name separately
 
             // Use provided date or get today's date in YYYYMMDD format
             let dateStr, displayDate;
@@ -2122,8 +2135,8 @@
             }
 
             row.innerHTML = `
-                <td>${name}</td>
-                <td>Personal color<button class="share-icon" onclick="shareColor(this)" title="Share color (copy URL to clipboard)" aria-label="Share color" role="button">🔗</button><button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete personal color" aria-label="Delete personal color" role="button">×</button></td>
+                <td>${brandName}</td>
+                <td>${polymerName}<button class="share-icon" onclick="shareColor(this)" title="Share color (copy URL to clipboard)" aria-label="Share color" role="button">🔗</button><button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete personal color" aria-label="Delete personal color" role="button">×</button></td>
                 <td class="color-cell"></td>
                 <td></td>
                 <td data-date="${dateStr}">${displayDate}</td>
@@ -2147,20 +2160,15 @@
         // Share color - copy URL to clipboard
         function shareColor(btn) {
             const row = btn.closest('tr');
-            let colorName;
+            let brandName, polymerName;
             
-            if (row.dataset.colorName) {
-                colorName = row.dataset.colorName;
-            } else {
-                // Extract color name from brand and polymer cells, excluding button elements
-                const brandName = row.cells[0].textContent.trim();
-                const polymerCell = row.cells[1].cloneNode(true);
-                // Remove all button elements from the cloned cell
-                const buttons = polymerCell.querySelectorAll('button');
-                buttons.forEach(button => button.remove());
-                const polymerName = polymerCell.textContent.trim();
-                colorName = `${brandName} ${polymerName}`;
-            }
+            // Extract brand and polymer from the row
+            brandName = row.cells[0].textContent.trim();
+            const polymerCell = row.cells[1].cloneNode(true);
+            // Remove all button elements from the cloned cell
+            const buttons = polymerCell.querySelectorAll('button');
+            buttons.forEach(button => button.remove());
+            polymerName = polymerCell.textContent.trim();
             
             // Get LAB values from the row
             const labStr = row.dataset.lab;
@@ -2174,7 +2182,7 @@
             
             // Get current page URL without query parameters
             const baseUrl = window.location.origin + window.location.pathname;
-            const shareUrl = `${baseUrl}?color-name=${encodeURIComponent(colorName)}&lab=${encodeURIComponent(labStr)}`;
+            const shareUrl = `${baseUrl}?brand=${encodeURIComponent(brandName)}&polymer=${encodeURIComponent(polymerName)}&lab=${encodeURIComponent(labStr)}`;
             
             // Check if clipboard API is available
             if (!navigator.clipboard || !navigator.clipboard.writeText) {
@@ -2260,10 +2268,14 @@
         function loadSharedColor() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                const colorName = urlParams.get('color-name');
+                const brandName = urlParams.get('brand');
+                const polymerName = urlParams.get('polymer');
                 const labStr = urlParams.get('lab');
                 
-                if (colorName && labStr) {
+                // Support legacy color-name parameter for backwards compatibility
+                const legacyColorName = urlParams.get('color-name');
+                
+                if ((brandName && polymerName && labStr) || (legacyColorName && labStr)) {
                     // Parse LAB string with error handling
                     let lab;
                     try {
@@ -2282,7 +2294,13 @@
                     }
                     
                     // Add the shared color to the table
-                    addUserColor(colorName, lab);
+                    if (brandName && polymerName) {
+                        // New format with separate brand and polymer
+                        addUserColorRow(brandName, polymerName, lab);
+                    } else {
+                        // Legacy format with combined color name
+                        addUserColorRow(legacyColorName, 'Personal color', lab);
+                    }
                     
                     // Remove the query parameters from the URL without reloading the page
                     // Preserve hash fragment if present
