@@ -1273,6 +1273,24 @@
             return { h, s, v };
         }
 
+        // Calculate relative luminance and determine if white or black text should be used
+        function getContrastColor(r, g, b) {
+            // Convert RGB to linear RGB
+            const toLinear = (c) => {
+                const normalized = c / 255;
+                return normalized <= 0.03928
+                    ? normalized / 12.92
+                    : Math.pow((normalized + 0.055) / 1.055, 2.4);
+            };
+
+            // Calculate relative luminance using ITU-R BT.709 coefficients
+            const luminance = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+
+            // Use white text for dark backgrounds, black text for light backgrounds
+            // Threshold of 0.5 works well for most cases
+            return luminance > 0.5 ? '#000000' : '#ffffff';
+        }
+
         // Dithering functions for out-of-gamut colors and sub-pixel accuracy
         function shouldDither(rgb) {
             // Dither if out of gamut
@@ -1675,17 +1693,18 @@
                 const lab = parseLAB(labStr);
                 const rgb = labToRGB(lab.L, lab.a, lab.b);
                 const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+                const textColor = getContrastColor(rgb.r, rgb.g, rgb.b);
 
                 // Apply the color as background to all color cells
                 allColorCells.forEach(cell => {
                     cell.style.backgroundColor = hex;
-                    cell.style.color = '#000000'; // Black text for visibility on light backgrounds
+                    cell.style.color = textColor;
                 });
 
                 // Also paint the entire hovered/tapped row with its color
                 Array.from(row.cells).forEach(cell => {
                     cell.style.backgroundColor = hex;
-                    cell.style.color = '#000000'; // Black text for visibility
+                    cell.style.color = textColor;
                 });
             }
 
