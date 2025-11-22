@@ -2054,7 +2054,7 @@
                         if (typeof lab === 'string') {
                             lab = parseLAB(lab);
                         }
-                        addUserColorRow(color.name, lab, false);
+                        addUserColorRow(color.name, lab, false, color.dateAdded);
                     });
                     // Sort table by Lightness using the initial sort state after loading all custom colors
                     sortByAttribute('lightness', sortStates.lightness);
@@ -2068,10 +2068,14 @@
         function saveUserColors() {
             try {
                 const rows = document.querySelectorAll('#filamentTable tbody tr[data-user-color="true"]');
-                const userColors = Array.from(rows).map(row => ({
-                    name: row.dataset.colorName, // Extract name from data attribute to avoid including HTML elements
-                    lab: row.dataset.lab
-                }));
+                const userColors = Array.from(rows).map(row => {
+                    const dateCell = row.cells[4];
+                    return {
+                        name: row.dataset.colorName, // Extract name from data attribute to avoid including HTML elements
+                        lab: row.dataset.lab,
+                        dateAdded: dateCell.dataset.date // Save the date when the color was added
+                    };
+                });
                 localStorage.setItem('userColors', JSON.stringify(userColors));
             } catch (e) {
                 console.error('Error saving user colors:', e);
@@ -2085,7 +2089,7 @@
         }
 
         // Add user color row to table
-        function addUserColorRow(name, lab, shouldSort = true) {
+        function addUserColorRow(name, lab, shouldSort = true, dateAdded = null) {
             const table = document.getElementById('filamentTable');
             const tbody = table.querySelector('tbody');
 
@@ -2094,14 +2098,28 @@
             row.dataset.userColor = 'true';
             row.dataset.colorName = name; // Store the name separately
 
-            // Get today's date in YYYYMMDD format
-            const today = new Date();
-            const dateStr = today.getFullYear() +
+            // Use provided date or get today's date in YYYYMMDD format
+            let dateStr, displayDate;
+            if (dateAdded) {
+                // Use the saved date
+                dateStr = dateAdded;
+                // Convert YYYYMMDD to display format
+                const year = dateStr.substring(0, 4);
+                const month = parseInt(dateStr.substring(4, 6)) - 1;
+                const day = dateStr.substring(6, 8);
+                displayDate = day + '-' +
+                            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][month] + '-' +
+                            year;
+            } else {
+                // Create new date for newly added color
+                const today = new Date();
+                dateStr = today.getFullYear() +
                           String(today.getMonth() + 1).padStart(2, '0') +
                           String(today.getDate()).padStart(2, '0');
-            const displayDate = String(today.getDate()).padStart(2, '0') + '-' +
+                displayDate = String(today.getDate()).padStart(2, '0') + '-' +
                               ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][today.getMonth()] + '-' +
                               today.getFullYear();
+            }
 
             row.innerHTML = `
                 <td>${name}</td>
