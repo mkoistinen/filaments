@@ -588,8 +588,6 @@
         highest to lowest but you can click a column header to sort differently.
     </p>
 
-    <button class="add-color-btn" onclick="openAddColorModal()">➕ Add Personal Color</button>
-
     <div class="color-mode-switcher">
         <strong>Color Format:</strong>
         <button class="color-mode-btn active" data-mode="lab">LAB</button>
@@ -609,132 +607,153 @@
                     <th data-sort="brand">Brand</th>
                     <th data-sort="polymer">Color/Polymer</th>
                     <th data-sort="color">Color</th>
+                    <th data-sort="cost">USD/Kg</th>
                     <th data-sort="date">Date Added</th>
-                    <!-- <th data-sort="cost">USD/Kg</th> -->
                 </tr>
         </thead>
         <tbody>
-           <tr data-lab="94.2, -2.2, -0.1">
+           <tr data-lab="94.2, -2.2, -0.1" data-asin="B07ZNHF46J">
                 <td>Sunlu</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B07ZNHF46J?tag=mkoistinen-20">16.99</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>16.99</td> -->
             </tr>
-            <tr data-lab="92.6, -1.8, -0.6">
+            <tr data-lab="92.6, -1.8, -0.6" data-asin="">
                 <td>Push Plastic</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.pushplastic.com/products/pla-filament-1-75mm-1kg?variant=45108523794593">24.99</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>19.99</td> -->
             </tr>
-            <tr data-lab="92.4, -2.1, -2.2">
+            <tr data-lab="92.4, -2.1, -2.2" data-asin="B0CS2XHNKL">
                 <td>eSun</td>
                 <td>Basic PLA - White</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B0CS2XHNKL?tag=mkoistinen-20">11.99</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>11.99</td> -->
             </tr>
-            <tr data-lab="92.2, -2.3, -0.4">
+            <tr data-lab="92.2, -2.3, -0.4" data-asin="B0BM559SBC">
                 <td>Hatchbox</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B0BM559SBC?tag=mkoistinen-20">28.00</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>28.00</td> -->
             </tr>
-            <tr data-lab="91.1, -2.0, -0.4">
+            <tr data-lab="91.1, -2.0, -0.4" data-asin="">
                 <td>ProtoPasta</td>
                 <td>Opaque White HTPLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://proto-pasta.com/products/premium-htpla-v3-white?variant=40714988872">49.99</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>99.99</td> -->
             </tr>
-            <tr data-lab="90.5, -2.3, -1.2">
+            <tr data-lab="90.5, -2.3, -1.2" data-asin="B07VGV5VSZ">
                 <td>Overture</td>
                 <td>White Pro PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B07VGV5VSZ?tag=mkoistinen-20">15.65</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>15.65</td> -->
             </tr>
-            <tr data-lab="90.4, -1.0, 0.1">
+            <tr data-lab="90.4, -1.0, 0.1" data-asin="B089S1HB8K">
                 <td>Overture</td>
                 <td>White Matte PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B089S1HB8K?tag=mkoistinen-20">15.12</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>15.12</td> -->
             </tr>
-            <tr data-lab="89.7, -1.9, -3.6">
+            <tr data-lab="89.7, -1.9, -3.6" data-asin="B0D25PGVYH">
                 <td>eSun</td>
                 <td>Cool White PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B0D25PGVYH?tag=mkoistinen-20">22.99</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>22.99</td> -->
             </tr>
-            <tr data-lab="89.3, 2.8, -7.8">
+            <tr data-lab="89.3, 2.8, -7.8" data-asin="B094PY34KX">
                 <td>Bblife</td>
                 <td>Silk White PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B094PY34KX?tag=mkoistinen-20">21.59</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>21.59</td> -->
             </tr>
-            <tr data-lab="89.2, -0.3, -5.0">
-                <td>Cryddle</td>
+            <tr data-lab="89.2, -0.3, -5.0" data-asin="B0FCT42J5Q">
+                <td>Gryddle</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B0FCT42J5Q?tag=mkoistinen-20">9.99</a></td>
                 <td data-date="20251119">19-Nov-2025</td>
-                <!-- <td>9.99</td> -->
             </tr>
-            <tr data-lab="87.6, -0.6, -1.7">
+            <tr data-lab="87.6, -0.6, -1.7" data-asin="B0FHWJPBH8">
                 <td>Soleyin</td>
                 <td>Ultra PLA White</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B0FHWJPBH8?tag=mkoistinen-20">12.99</a></td>
                 <td data-date="20251119">19-Nov-2025</td>
-                <!-- <td>12.99</td> -->
             </tr>
-            <tr data-lab="87.3, 3.2, -6.5">
+            <tr data-lab="87.3, 3.2, -6.5" data-asin="B0BLYVTZSX">
                 <td>Mika 3D</td>
                 <td>Silk White PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B0BLYVTZSX?tag=mkoistinen-20">17.09</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>17.09</td> -->
             </tr>
-            <tr data-lab="85.9, 0.1, -0.8">
+            <tr data-lab="85.9, 0.1, -0.8" data-asin="B0BM7WZPXJ">
                 <td>Elegoo</td>
                 <td>White PLA Plus</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B0BM7WZPXJ?tag=mkoistinen-20">14.99</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>14.99</td> -->
             </tr>
-            <tr data-lab="85.7, -0.5, -0.8">
+            <tr data-lab="85.7, -0.5, -0.8" data-asin="B0DCJRRJ49">
                 <td>Deeplee</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B0DCJRRJ49?tag=mkoistinen-20">11.99</a></td>
                 <td data-date="20251119">19-Nov-2025</td>
-                <!-- <td>11.99</td> -->
             </tr>
-            <tr data-lab="85.3, -1.4, -1.9">
+            <tr data-lab="85.3, -1.4, -1.9" data-asin="B0B5GWJY2H">
                 <td>Mika 3D</td>
                 <td>White PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B0B5GWJY2H?tag=mkoistinen-20">17.26</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>17.26</td> -->
             </tr>
-            <tr data-lab="83.4, -1.2, -1.7">
+            <tr data-lab="83.4, -1.2, -1.7" data-asin="">
                 <td>Prusament</td>
                 <td>Pristine White PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.prusa3d.com/product/prusament-pla-pristine-white-1kg/">26.99</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>26.99</td> -->
             </tr>
-            <tr data-lab="83.2, 0.2, -5.1">
+            <tr data-lab="83.2, 0.2, -5.1" data-asin="B00ME7E5X0">
                 <td>3D Solutech</td>
                 <td>Real White Premium PLA</td>
                 <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B0B5GWJY2H?tag=mkoistinen-20">19.99</a></td>
                 <td data-date="20251117">17-Nov-2025</td>
-                <!-- <td>19.99</td> -->
             </tr>
+            <!-- tr data-lab="" data-asin="B099K1TCFM">
+                <td>Polymaker</td>
+                <td>White PLA</td>
+                <td class="color-cell"></td>
+                <td><a href="https://www.amazon.com/dp/B099K1TCFM?tag=mkoistinen-20">17.24</a></td>
+                <td data-date=""></td>
+            </tr -->
         </tbody>
     </table>
+    <button class="add-color-btn" onclick="openAddColorModal()">➕ Add Personal Color</button>
+    </div>
+
+    <div>
+        <small style="display: block; margin-top: 5px; opacity: 0.7;">
+            All prices captured at date of adding the filament. Links to Amazon
+            are affiliate links -- primarily so that I can eventually offer
+            "live" prices as this requires a certain number of affiliate
+            purchases before I can connect to the API to do so. Although this
+            site costs me nothing to operate, I still have to buy all these
+            filaments for physical color measurements, so, using the affiliate
+            links will help me keep adding new filaments for
+            everyone's benefit. 😀
+        </small>
     </div>
 
     <!-- Add Color Modal -->
@@ -1845,8 +1864,9 @@
 
             row.innerHTML = `
                 <td>${name}</td>
-                <td>User Specified<button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete this color" aria-label="Delete this color" role="button">🗑️</button></td>
+                <td>Personal color<button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete this color" aria-label="Delete this color" role="button">🗑️</button></td>
                 <td class="color-cell"></td>
+                <td></td>
                 <td data-date="${dateStr}">${displayDate}</td>
             `;
 
