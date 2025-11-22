@@ -831,9 +831,10 @@
         <button class="color-mode-btn" data-mode="hsv">HSV</button>
         <button class="color-mode-btn" data-mode="hex">Hex</button>
         <strong style="padding-left: 2em;">Sort by:</strong>
-        <button class="color-mode-btn" data-sort="lightness">Lightness ↓</button>
-        <button class="color-mode-btn" data-sort="warmth">Tint Warmth ↑</button>
-        <button class="color-mode-btn" data-sort="strength">Tint Strength ↑</button>
+        <button class="color-mode-btn" data-sort="lightness" title="Sort by the magnitude of the Lab Lightness value.">Lightness ↓</button>
+        <button class="color-mode-btn" data-sort="hue" title="Sort by Lab a-axis (green-red)">Tint Hue ↑</button>
+        <button class="color-mode-btn" data-sort="warmth" title="Sort by Lab b-axis (blue-yellow)">Tint Warmth ↑</button>
+        <button class="color-mode-btn" data-sort="strength" title="Sort by the magnitude of the Lab a- and b-axes together.">Tint Strength ↑</button>
     </div>
 
     <div class="table-container">
@@ -1516,6 +1517,7 @@
         // Track sort state for toggle buttons
         let sortStates = {
             lightness: 'desc',  // Start with high to low (↓)
+            hue: 'asc',         // Start with green to red (↑)
             warmth: 'asc',      // Start with cool to warm (↑)
             strength: 'asc'     // Start with least to most (↑)
         };
@@ -1546,6 +1548,8 @@
 
             if (sortType === 'lightness') {
                 btn.textContent = direction === 'desc' ? 'Lightness ↓' : 'Lightness ↑';
+            } else if (sortType === 'hue') {
+                btn.textContent = direction === 'asc' ? 'Tint Hue ↑' : 'Tint Hue ↓';
             } else if (sortType === 'warmth') {
                 btn.textContent = direction === 'asc' ? 'Tint Warmth ↑' : 'Tint Warmth ↓';
             } else if (sortType === 'strength') {
@@ -1568,6 +1572,9 @@
                 if (sortType === 'lightness') {
                     // Sort by L value (lightness)
                     comparison = aLab.L - bLab.L;
+                } else if (sortType === 'hue') {
+                    // Sort by a value (green-red axis)
+                    comparison = aLab.a - bLab.a;
                 } else if (sortType === 'warmth') {
                     // Sort by b value (blue-yellow axis)
                     comparison = aLab.b - bLab.b;
