@@ -2168,7 +2168,7 @@
             // Validate LAB data exists
             if (!labStr) {
                 console.error('No LAB data found for this color');
-                alert('Unable to share: Color data is missing.');
+                alert('Unable to share: Color specification data is missing.');
                 return;
             }
             
@@ -2248,6 +2248,14 @@
         // Load user colors on page load
         loadUserColors();
 
+        // Utility function to validate LAB color values
+        function isValidLab(lab) {
+            return lab && 
+                   typeof lab.L === 'number' && !isNaN(lab.L) &&
+                   typeof lab.a === 'number' && !isNaN(lab.a) &&
+                   typeof lab.b === 'number' && !isNaN(lab.b);
+        }
+
         // Check for shared color in URL parameters
         function loadSharedColor() {
             try {
@@ -2262,17 +2270,14 @@
                         lab = parseLAB(labStr);
                     } catch (parseError) {
                         console.error('Error parsing LAB values:', parseError);
-                        alert('Invalid shared link: Unable to parse color data.');
+                        alert('Invalid shared link: The color data format is not recognized. Please check the link or request a new one.');
                         return;
                     }
                     
                     // Validate LAB object exists and values are valid numbers
-                    if (!lab || 
-                        typeof lab.L !== 'number' || isNaN(lab.L) ||
-                        typeof lab.a !== 'number' || isNaN(lab.a) ||
-                        typeof lab.b !== 'number' || isNaN(lab.b)) {
+                    if (!isValidLab(lab)) {
                         console.error('Invalid LAB values in shared link:', labStr);
-                        alert('Invalid shared link: The color data is malformed.');
+                        alert('Invalid shared link: The color information is corrupted or incomplete. Please request a new sharing link.');
                         return;
                     }
                     
@@ -2286,7 +2291,7 @@
                 }
             } catch (error) {
                 console.error('Error loading shared color from URL:', error);
-                alert('Unable to load shared color: Invalid URL parameters.');
+                alert('Unable to load shared color: The link appears to be invalid or corrupted. Please check the URL or request a new sharing link.');
             }
         }
         
