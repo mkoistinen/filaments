@@ -2156,7 +2156,7 @@
                 alert('Share this URL:\n\n' + shareUrl);
                 setTimeout(() => {
                     btn.textContent = originalText;
-                }, 100);
+                }, 1000);
                 return;
             }
             
@@ -2178,7 +2178,7 @@
                 // Fallback visual feedback for error
                 const originalText = btn.textContent;
                 btn.textContent = '✗';
-                btn.title = 'Copy failed. Clipboard access requires HTTPS or localhost.';
+                btn.title = 'Copy failed. Please try again or copy the URL manually.';
                 setTimeout(() => {
                     btn.textContent = originalText;
                     btn.title = 'Share color (copy URL to clipboard)';
