@@ -2049,6 +2049,14 @@
             closeAddColorModal();
         }
 
+        // Utility function to extract polymer text from cell (excluding buttons)
+        function getPolymerTextFromCell(cell) {
+            const clonedCell = cell.cloneNode(true);
+            const buttons = clonedCell.querySelectorAll('button');
+            buttons.forEach(button => button.remove());
+            return clonedCell.textContent.trim();
+        }
+
         // Load user colors from localStorage
         function loadUserColors() {
             try {
@@ -2061,7 +2069,14 @@
                         if (typeof lab === 'string') {
                             lab = parseLAB(lab);
                         }
-                        addUserColorRow(color.name, lab, false, color.dateAdded);
+                        
+                        // Support both new format (brand + polymer) and legacy format (name only)
+                        if (color.brand && color.polymer) {
+                            addUserColorRow(color.brand, color.polymer, lab, false, color.dateAdded);
+                        } else if (color.name) {
+                            // Legacy format
+                            addUserColorRow(color.name, 'Personal color', lab, false, color.dateAdded);
+                        }
                     });
                     // Sort table by Lightness using the initial sort state after loading all custom colors
                     sortByAttribute('lightness', sortStates.lightness);
@@ -2077,10 +2092,14 @@
                 const rows = document.querySelectorAll('#filamentTable tbody tr[data-user-color="true"]');
                 const userColors = Array.from(rows).map(row => {
                     const dateCell = row.cells[4];
+                    const brandCell = row.cells[0];
+                    const polymerText = getPolymerTextFromCell(row.cells[1]);
+                    
                     return {
-                        name: row.dataset.colorName, // Extract name from data attribute to avoid including HTML elements
+                        brand: brandCell.textContent.trim(),
+                        polymer: polymerText,
                         lab: row.dataset.lab,
-                        dateAdded: dateCell.dataset.date // Save the date when the color was added
+                        dateAdded: dateCell.dataset.date
                     };
                 });
                 localStorage.setItem('userColors', JSON.stringify(userColors));
@@ -2091,19 +2110,18 @@
 
         // Add user color
         function addUserColor(name, lab) {
-            addUserColorRow(name, lab, true);
+            addUserColorRow(name, 'Personal color', lab, true);
             saveUserColors();
         }
 
         // Add user color row to table
-        function addUserColorRow(name, lab, shouldSort = true, dateAdded = null) {
+        function addUserColorRow(brandName, polymerName, lab, shouldSort = true, dateAdded = null) {
             const table = document.getElementById('filamentTable');
             const tbody = table.querySelector('tbody');
 
             const row = document.createElement('tr');
             row.dataset.lab = `${lab.L.toFixed(1)}, ${lab.a.toFixed(1)}, ${lab.b.toFixed(1)}`;
             row.dataset.userColor = 'true';
-            row.dataset.colorName = name; // Store the name separately
 
             // Use provided date or get today's date in YYYYMMDD format
             let dateStr, displayDate;
@@ -2129,8 +2147,8 @@
             }
 
             row.innerHTML = `
-                <td>${name}</td>
-                <td>Personal color<button class="share-icon" onclick="shareColor(this)" title="Share color (copy URL to clipboard)" aria-label="Share color" role="button">🔗</button><button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete personal color" aria-label="Delete personal color" role="button">×</button></td>
+                <td>${brandName}</td>
+                <td>${polymerName}<button class="share-icon" onclick="shareColor(this)" title="Share color (copy URL to clipboard)" aria-label="Share color" role="button">🔗</button><button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete personal color" aria-label="Delete personal color" role="button">×</button></td>
                 <td class="color-cell"></td>
                 <td></td>
                 <td data-date="${dateStr}">${displayDate}</td>
@@ -2154,25 +2172,25 @@
         // Share color - copy URL to clipboard
         function shareColor(btn) {
             const row = btn.closest('tr');
-            let colorName;
-
-            if (row.dataset.colorName) {
-                colorName = row.dataset.colorName;
-            } else {
-                // Extract color name from brand and polymer cells, excluding button elements
-                const brandName = row.cells[0].textContent.trim();
-                const polymerCell = row.cells[1].cloneNode(true);
-                // Remove all button elements from the cloned cell
-                const buttons = polymerCell.querySelectorAll('button');
-                buttons.forEach(button => button.remove());
-                const polymerName = polymerCell.textContent.trim();
-                colorName = `${brandName} ${polymerName}`;
+            
+            // Extract brand and polymer from the row
+            const brandName = row.cells[0].textContent.trim();
+            const polymerName = getPolymerTextFromCell(row.cells[1]);
+            
+            // Get LAB values from the row
+            const labStr = row.dataset.lab;
+            
+            // Validate LAB data exists
+            if (!labStr) {
+                console.error('No LAB data found for this color');
+                alert('Unable to share: Color specification data is missing.');
+                return;
             }
-
+            
             // Get current page URL without query parameters
             const baseUrl = window.location.origin + window.location.pathname;
-            const shareUrl = `${baseUrl}?color-name=${encodeURIComponent(colorName)}`;
-
+            const shareUrl = `${baseUrl}?brand=${encodeURIComponent(brandName)}&polymer=${encodeURIComponent(polymerName)}&lab=${encodeURIComponent(labStr)}`;
+            
             // Check if clipboard API is available
             if (!navigator.clipboard || !navigator.clipboard.writeText) {
                 // Fallback: show URL in alert for manual copy
@@ -2184,7 +2202,7 @@
                 }, 1000);
                 return;
             }
-
+            
             // Copy to clipboard
             navigator.clipboard.writeText(shareUrl).then(() => {
                 // Visual feedback
@@ -2192,7 +2210,7 @@
                 btn.textContent = '✓';
                 btn.style.background = 'var(--button-active-bg)';
                 btn.style.color = 'var(--button-active-color)';
-
+                
                 setTimeout(() => {
                     btn.textContent = originalText;
                     btn.style.background = '';
@@ -2245,6 +2263,72 @@
         // Load user colors on page load
         loadUserColors();
 
+        // Utility function to validate LAB color values
+        function isValidLab(lab) {
+            return lab && 
+                   typeof lab.L === 'number' && !isNaN(lab.L) &&
+                   typeof lab.a === 'number' && !isNaN(lab.a) &&
+                   typeof lab.b === 'number' && !isNaN(lab.b);
+        }
+
+        // Check for shared color in URL parameters
+        function loadSharedColor() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const brandName = urlParams.get('brand');
+                const polymerName = urlParams.get('polymer');
+                const labStr = urlParams.get('lab');
+                
+                // Support legacy color-name parameter for backwards compatibility
+                const legacyColorName = urlParams.get('color-name');
+                
+                if ((brandName && polymerName && labStr) || (legacyColorName && labStr)) {
+                    // Parse LAB string with error handling
+                    let lab;
+                    try {
+                        lab = parseLAB(labStr);
+                    } catch (parseError) {
+                        console.error('Error parsing LAB values:', parseError);
+                        alert('Invalid shared link: The color data format is not recognized. Please check the link or request a new one.');
+                        return;
+                    }
+                    
+                    // Validate LAB object exists and values are valid numbers
+                    if (!isValidLab(lab)) {
+                        console.error('Invalid LAB values in shared link:', labStr);
+                        alert('Invalid shared link: The color information is corrupted or incomplete. Please request a new sharing link.');
+                        return;
+                    }
+                    
+                    // Add the shared color to the table (don't sort yet - will sort after)
+                    if (brandName && polymerName) {
+                        // New format with separate brand and polymer
+                        addUserColorRow(brandName, polymerName, lab, false);
+                    } else {
+                        // Legacy format with combined color name
+                        addUserColorRow(legacyColorName, 'Personal color', lab, false);
+                    }
+                    
+                    // Save to localStorage so the shared color persists
+                    saveUserColors();
+                    
+                    // Sort the table once after adding
+                    sortByAttribute('lightness', sortStates.lightness);
+                    
+                    // Remove the query parameters from the URL without reloading the page
+                    // Preserve hash fragment if present
+                    const newUrl = window.location.origin + window.location.pathname + window.location.hash;
+                    window.history.replaceState({}, document.title, newUrl);
+                }
+            } catch (error) {
+                console.error('Error loading shared color from URL:', error);
+                alert('Unable to load shared color: The link appears to be invalid or corrupted. Please check the URL or request a new sharing link.');
+            }
+        }
+        
+        // Load shared color if present in URL
+        loadSharedColor();
+
         // Add share icons to all predefined filament rows
         function addShareIconsToStaticRows() {
             const rows = document.querySelectorAll('#filamentTable tbody tr:not([data-user-color])');
@@ -2256,7 +2340,7 @@
                     const brandName = row.cells[0].textContent.trim();
                     const polymerName = polymerCell.textContent.trim();
                     row.dataset.colorName = `${brandName} ${polymerName}`;
-
+                    
                     // Add share icon
                     const shareIcon = document.createElement('button');
                     shareIcon.className = 'share-icon';
@@ -2265,7 +2349,7 @@
                     shareIcon.setAttribute('aria-label', 'Share color');
                     shareIcon.setAttribute('role', 'button');
                     shareIcon.onclick = function() { shareColor(this); };
-
+                    
                     polymerCell.appendChild(shareIcon);
                 }
             });
