@@ -645,6 +645,34 @@
             background: var(--button-hover);
         }
 
+        /* Share icon styles - positioned to the left of delete icon */
+        .share-icon {
+            position: absolute;
+            top: 7px;
+            right: 40px;  /* Position to the left of delete icon */
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            background: var(--button-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 0.85em;
+            line-height: 24px;
+            text-align: center;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+
+        tbody tr:hover .share-icon {
+            opacity: 1;
+        }
+
+        .share-icon:hover {
+            background: var(--button-hover);
+        }
+
         /* Confirmation modal styles */
         .confirm-modal {
             display: none;
@@ -2077,7 +2105,7 @@
 
             row.innerHTML = `
                 <td>${name}</td>
-                <td>Personal color<button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete personal color" aria-label="Delete personal color" role="button">×</button></td>
+                <td>Personal color<button class="share-icon" onclick="shareColor(this)" title="Share color (copy URL to clipboard)" aria-label="Share color" role="button">🔗</button><button class="delete-icon" onclick="showDeleteConfirmation(this)" title="Delete personal color" aria-label="Delete personal color" role="button">×</button></td>
                 <td class="color-cell"></td>
                 <td></td>
                 <td data-date="${dateStr}">${displayDate}</td>
@@ -2096,6 +2124,41 @@
                 // Use sortByAttribute to maintain the current sort direction without toggling
                 sortByAttribute('lightness', sortStates.lightness);
             }
+        }
+
+        // Share color - copy URL to clipboard
+        function shareColor(btn) {
+            const row = btn.closest('tr');
+            const colorName = row.dataset.colorName || row.cells[0].textContent.trim() + ' ' + row.cells[1].textContent.trim().replace(/<button.*<\/button>/g, '').trim();
+            
+            // Get current page URL without query parameters
+            const baseUrl = window.location.origin + window.location.pathname;
+            const shareUrl = `${baseUrl}?color-name=${encodeURIComponent(colorName)}`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                // Visual feedback
+                const originalText = btn.textContent;
+                btn.textContent = '✓';
+                btn.style.background = 'var(--button-active-bg)';
+                btn.style.color = 'var(--button-active-color)';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 1000);
+            }).catch(err => {
+                console.error('Failed to copy share URL:', err);
+                // Fallback visual feedback for error
+                const originalText = btn.textContent;
+                btn.textContent = '✗';
+                btn.title = 'Copy failed. Clipboard access requires HTTPS or localhost.';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.title = 'Share color (copy URL to clipboard)';
+                }, 2000);
+            });
         }
 
         // Delete user color - show confirmation modal
@@ -2131,6 +2194,35 @@
 
         // Load user colors on page load
         loadUserColors();
+
+        // Add share icons to all predefined filament rows
+        function addShareIconsToStaticRows() {
+            const rows = document.querySelectorAll('#filamentTable tbody tr:not([data-user-color])');
+            rows.forEach(row => {
+                // Get the polymer/type column (second column)
+                const polymerCell = row.cells[1];
+                if (polymerCell && !polymerCell.querySelector('.share-icon')) {
+                    // Store color name for easier sharing
+                    const brandName = row.cells[0].textContent.trim();
+                    const polymerName = polymerCell.textContent.trim();
+                    row.dataset.colorName = `${brandName} ${polymerName}`;
+                    
+                    // Add share icon
+                    const shareIcon = document.createElement('button');
+                    shareIcon.className = 'share-icon';
+                    shareIcon.textContent = '🔗';
+                    shareIcon.title = 'Share color (copy URL to clipboard)';
+                    shareIcon.setAttribute('aria-label', 'Share color');
+                    shareIcon.setAttribute('role', 'button');
+                    shareIcon.onclick = function() { shareColor(this); };
+                    
+                    polymerCell.appendChild(shareIcon);
+                }
+            });
+        }
+
+        // Add share icons after page load
+        addShareIconsToStaticRows();
     </script>
 </body>
 </html>
