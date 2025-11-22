@@ -2206,6 +2206,23 @@
             }
         };
 
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' || event.key === 'Esc') {
+                const addModal = document.getElementById('addColorModal');
+                const editModal = document.getElementById('editColorModal');
+                const deleteModal = document.getElementById('deleteConfirmModal');
+
+                if (addModal && addModal.style.display === 'block') {
+                    closeAddColorModal();
+                } else if (editModal && editModal.style.display === 'block') {
+                    closeEditColorModal();
+                } else if (deleteModal && deleteModal.style.display === 'block') {
+                    closeDeleteConfirmation();
+                }
+            }
+        });
+
         // Validate color and enable/disable submit button
         function validateColor() {
             const specInput = document.getElementById('colorSpec');
