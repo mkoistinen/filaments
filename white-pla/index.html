@@ -2165,6 +2165,13 @@
             // Get LAB values from the row
             const labStr = row.dataset.lab;
             
+            // Validate LAB data exists
+            if (!labStr) {
+                console.error('No LAB data found for this color');
+                alert('Unable to share: Color data is missing.');
+                return;
+            }
+            
             // Get current page URL without query parameters
             const baseUrl = window.location.origin + window.location.pathname;
             const shareUrl = `${baseUrl}?color-name=${encodeURIComponent(colorName)}&lab=${encodeURIComponent(labStr)}`;
