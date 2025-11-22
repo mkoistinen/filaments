@@ -2078,14 +2078,11 @@
                 const userColors = Array.from(rows).map(row => {
                     const dateCell = row.cells[4];
                     const brandCell = row.cells[0];
-                    const polymerCell = row.cells[1].cloneNode(true);
-                    // Remove buttons from polymer cell before getting text
-                    const buttons = polymerCell.querySelectorAll('button');
-                    buttons.forEach(button => button.remove());
+                    const polymerText = getPolymerTextFromCell(row.cells[1]);
                     
                     return {
                         brand: brandCell.textContent.trim(),
-                        polymer: polymerCell.textContent.trim(),
+                        polymer: polymerText,
                         lab: row.dataset.lab,
                         dateAdded: dateCell.dataset.date
                     };
@@ -2164,11 +2161,7 @@
             
             // Extract brand and polymer from the row
             brandName = row.cells[0].textContent.trim();
-            const polymerCell = row.cells[1].cloneNode(true);
-            // Remove all button elements from the cloned cell
-            const buttons = polymerCell.querySelectorAll('button');
-            buttons.forEach(button => button.remove());
-            polymerName = polymerCell.textContent.trim();
+            polymerName = getPolymerTextFromCell(row.cells[1]);
             
             // Get LAB values from the row
             const labStr = row.dataset.lab;
@@ -2263,6 +2256,14 @@
                    typeof lab.a === 'number' && !isNaN(lab.a) &&
                    typeof lab.b === 'number' && !isNaN(lab.b);
         }
+        
+        // Utility function to extract polymer text from cell (excluding buttons)
+        function getPolymerTextFromCell(cell) {
+            const clonedCell = cell.cloneNode(true);
+            const buttons = clonedCell.querySelectorAll('button');
+            buttons.forEach(button => button.remove());
+            return clonedCell.textContent.trim();
+        }
 
         // Check for shared color in URL parameters
         function loadSharedColor() {
@@ -2293,17 +2294,20 @@
                         return;
                     }
                     
-                    // Add the shared color to the table
+                    // Add the shared color to the table (don't sort yet - will sort after)
                     if (brandName && polymerName) {
                         // New format with separate brand and polymer
-                        addUserColorRow(brandName, polymerName, lab);
+                        addUserColorRow(brandName, polymerName, lab, false);
                     } else {
                         // Legacy format with combined color name
-                        addUserColorRow(legacyColorName, 'Personal color', lab);
+                        addUserColorRow(legacyColorName, 'Personal color', lab, false);
                     }
                     
                     // Save to localStorage so the shared color persists
                     saveUserColors();
+                    
+                    // Sort the table once after adding
+                    sortByAttribute('lightness', sortStates.lightness);
                     
                     // Remove the query parameters from the URL without reloading the page
                     // Preserve hash fragment if present
