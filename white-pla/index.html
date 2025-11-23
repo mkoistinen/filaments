@@ -1699,23 +1699,57 @@
                 const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
                 const textColor = getContrastColor(rgb.r, rgb.g, rgb.b);
 
-                // Apply the color as background to all color cells
-                allColorCells.forEach(cell => {
-                    cell.style.backgroundColor = hex;
-                    cell.style.color = textColor;
-                });
+                // Check if we should use dithering
+                const unclampedRGB = xyzToRGB(labToXYZ(lab.L, lab.a, lab.b).X,
+                                               labToXYZ(lab.L, lab.a, lab.b).Y,
+                                               labToXYZ(lab.L, lab.a, lab.b).Z, false);
+                const useDithering = shouldDither(unclampedRGB);
 
-                // Also paint the entire hovered/tapped row with its color
-                Array.from(row.cells).forEach(cell => {
-                    cell.style.backgroundColor = hex;
-                    cell.style.color = textColor;
-                });
+                if (useDithering) {
+                    // Create a large dithered canvas for backgrounds
+                    const canvas = createDitheredSwatch(lab, 4); // 4x4 pixel pattern
+                    const pattern = canvas.toDataURL();
+
+                    // Apply the dithered pattern as background to all color cells
+                    allColorCells.forEach(cell => {
+                        cell.style.backgroundColor = '';
+                        cell.style.backgroundImage = `url(${pattern})`;
+                        cell.style.backgroundRepeat = 'repeat';
+                        cell.style.backgroundSize = '4px 4px';
+                        cell.style.color = textColor;
+                    });
+
+                    // Also paint the entire hovered/tapped row with the dithered pattern
+                    Array.from(row.cells).forEach(cell => {
+                        cell.style.backgroundColor = '';
+                        cell.style.backgroundImage = `url(${pattern})`;
+                        cell.style.backgroundRepeat = 'repeat';
+                        cell.style.backgroundSize = '4px 4px';
+                        cell.style.color = textColor;
+                    });
+                } else {
+                    // Use solid color for in-gamut colors
+                    // Apply the color as background to all color cells
+                    allColorCells.forEach(cell => {
+                        cell.style.backgroundColor = hex;
+                        cell.style.backgroundImage = '';
+                        cell.style.color = textColor;
+                    });
+
+                    // Also paint the entire hovered/tapped row with its color
+                    Array.from(row.cells).forEach(cell => {
+                        cell.style.backgroundColor = hex;
+                        cell.style.backgroundImage = '';
+                        cell.style.color = textColor;
+                    });
+                }
             }
 
             function clearColorBackground() {
                 // Clear backgrounds on all color cells
                 allColorCells.forEach(cell => {
                     cell.style.backgroundColor = '';
+                    cell.style.backgroundImage = '';
                     cell.style.color = ''; // Reset to default text color
                 });
 
@@ -1723,6 +1757,7 @@
                 rows.forEach(row => {
                     Array.from(row.cells).forEach(cell => {
                         cell.style.backgroundColor = '';
+                        cell.style.backgroundImage = '';
                         cell.style.color = '';
                     });
                     row.classList.remove('selected');
